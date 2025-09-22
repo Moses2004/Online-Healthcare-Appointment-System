@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35913.81 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Online Healthcare Appointment System", "Online Healthcare Appointment System.csproj", "{B30CCDB0-193C-4B44-B9AB-024AF967098F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B30CCDB0-193C-4B44-B9AB-024AF967098F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B30CCDB0-193C-4B44-B9AB-024AF967098F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B30CCDB0-193C-4B44-B9AB-024AF967098F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B30CCDB0-193C-4B44-B9AB-024AF967098F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EF677EC3-0091-41B1-BF9E-93AB847B5BD8}
+	EndGlobalSection
+EndGlobal

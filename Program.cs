@@ -4,6 +4,7 @@ using Online_Healthcare_Appointment_System.Data;
 using Online_Healthcare_Appointment_System.Models;
 
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -38,6 +39,9 @@ else
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();   // important
+
+
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -50,22 +54,26 @@ app.MapControllerRoute(
 app.MapRazorPages()
    .WithStaticAssets();
 
-// Seed default Admin user
+// Seed roles and default Admin user
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-    // 1. Ensure "Admin" role exists
-    if (!await roleManager.RoleExistsAsync("Admin"))
+    // Ensure all roles exist
+    string[] roles = new[] { "Admin", "Doctor", "Patient" };
+    foreach (var role in roles)
     {
-        await roleManager.CreateAsync(new IdentityRole("Admin"));
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
     }
 
-    // 2. Create default admin user if not exists
+    // Create default admin if not exists
     string adminEmail = "admin@healthcare.com";
-    string adminPassword = "Admin123!@#"; // change if needed
+    string adminPassword = "Admin123!@#";
 
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
     if (adminUser == null)
@@ -84,5 +92,15 @@ using (var scope = app.Services.CreateScope())
             await userManager.AddToRoleAsync(adminUser, "Admin");
         }
     }
+    else
+    {
+        if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+        }
+    }
 }
+
+
+
 app.Run();

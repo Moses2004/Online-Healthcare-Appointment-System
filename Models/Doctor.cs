@@ -14,5 +14,8 @@
 
         // Navigation
         public Specialization Specialization { get; set; }
+
+        public bool IsApproved { get; set; } = false;
+
     }
 }

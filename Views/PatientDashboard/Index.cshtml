@@ -1,0 +1,62 @@
+﻿@model Online_Healthcare_Appointment_System.Models.ViewModels.PatientDashboardVM
+
+@{
+    ViewData["Title"] = "Patient Dashboard";
+}
+
+<h2>Welcome, @Model.PatientName</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Today's Appointments</h5>
+                <p class="display-6">@Model.TodayCount</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">This Week's Appointments</h5>
+                <p class="display-6">@Model.ThisWeekCount</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<h3>Upcoming Appointments</h3>
+<div class="mt-3">
+    <a asp-controller="Appointments" asp-action="Create" class="btn btn-primary">
+        Book Appointment
+    </a>
+</div>
+
+@if (Model.UpcomingAppointments != null && Model.UpcomingAppointments.Any())
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Doctor</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var appt in Model.UpcomingAppointments)
+            {
+                <tr>
+                    <td>@appt.AppointmentDate.ToString("f")</td>
+                    <td>@appt.DoctorName</td>
+                    <td>@appt.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No upcoming appointments found.</p>
+}

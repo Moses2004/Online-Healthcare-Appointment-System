@@ -1,0 +1,83 @@
+﻿@model Online_Healthcare_Appointment_System.Models.ViewModels.DoctorDashboardVM
+
+@{
+    ViewData["Title"] = "Doctor Dashboard";
+}
+
+<h2>Doctor Dashboard</h2>
+<p><strong>Welcome, Dr. @Model.DoctorName</strong></p>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card bg-light p-3 mb-3">
+            <h4>Today's Appointments</h4>
+            <p>@Model.TodayCount</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card bg-light p-3 mb-3">
+            <h4>This Week's Appointments</h4>
+            <p>@Model.ThisWeekCount</p>
+        </div>
+    </div>
+</div>
+
+<hr />
+<h3>Upcoming Appointments</h3>
+
+@if (Model.UpcomingAppointments != null && Model.UpcomingAppointments.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Patient</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var appt in Model.UpcomingAppointments)
+            {
+                <tr>
+                    <td>@appt.AppointmentDate.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@appt.PatientName</td>
+                    <td>@appt.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No upcoming appointments found.</p>
+}
+
+<hr />
+<h3>Previous Appointments</h3>
+
+@if (Model.PreviousAppointments != null && Model.PreviousAppointments.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Patient</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var appt in Model.PreviousAppointments)
+            {
+                <tr>
+                    <td>@appt.AppointmentDate.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@appt.PatientName</td>
+                    <td>@appt.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No previous appointments found.</p>
+}

@@ -49,22 +49,27 @@ namespace Online_Healthcare_Appointment_System.Controllers
 
                 if (result.Succeeded)
                 {
-                    // Step 2: Create Doctor profile linked to AspNetUsers
+                    // Assign role Doctor
+                    await _userManager.AddToRoleAsync(user, "Doctor");
+
+                    // Save Doctor record
                     var doctor = new Doctor
                     {
-                        Name = model.FullName,
-                        UserId = user.Id,                // link to AspNetUsers
+                        Name = user.FullName,
+                       
+                        UserId = user.Id,
+                     
                         SpecializationId = model.SpecializationId,
                         ConsultationFee = model.ConsultationFee,
                         Availability = true
                     };
 
                     _context.Doctors.Add(doctor);
-                    await _context.SaveChangesAsync();  // critical
+                    await _context.SaveChangesAsync();
 
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "DoctorDashboard");
                 }
+
 
                 foreach (var error in result.Errors)
                 {

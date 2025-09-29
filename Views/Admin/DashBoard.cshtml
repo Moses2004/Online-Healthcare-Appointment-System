@@ -1,0 +1,17 @@
+﻿  @{
+  ViewData["Title"] = "Admin Dashboard";
+}
+
+<h1>Admin Dashboard</h1>
+
+<p>Total Doctors: @ViewData["DoctorCount"]</p>
+<p>Total Patients: @ViewData["PatientCount"]</p>
+<p>Total Appointments: @ViewData["AppointmentCount"]</p>
+
+<ul>
+    <li><a asp-controller="Doctors" asp-action="Index">Manage Doctors</a></li>
+    <li><a asp-controller="Patients" asp-action="Index">Manage Patients</a></li>
+    <li><a asp-controller="Specializations" asp-action="Index">Manage Specializations</a></li>
+    <li><a asp-controller="Appointments" asp-action="Index">Manage Appointments</a></li>
+
+</ul>

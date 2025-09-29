@@ -118,36 +118,44 @@ namespace Online_Healthcare_Appointment_System.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser
                 {
                     UserName = Input.Email,
                     Email = Input.Email,
-                    FullName = Input.FullName,   
-                    RoleType = "Patient"         //  default role (can change later)
+                    FullName = Input.FullName,
+                    RoleType = "Patient"
                 };
+
+                // optional but nice to persist to AspNetUsers too
+                user.PhoneNumber = Input.PhoneNumber; // NEW
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                    if (user.RoleType == "Patient")
+
+                    // assign the Identity role "Patient"
+                    await _userManager.AddToRoleAsync(user, "Patient"); // NEW
+
+                    // create the Patient profile row (your domain table)
+                    var patient = new Patient
                     {
-                        var patient = new Patient
-                        {
-                            Name = user.FullName,
-                            Email = user.Email,
-                            UserId = user.Id, // foreign key link
-                            Phone = Input.PhoneNumber,
-                            Gender = Input.Gender,          
-                            Address = Input.Address,
-                           
-                        };
-                        _context.Patients.Add(patient);
-                        await _context.SaveChangesAsync();
-                    }
+                        Name = user.FullName,
+                        Email = user.Email,
+                        UserId = user.Id,          // FK to AspNetUsers
+                        Phone = Input.PhoneNumber,
+                        Gender = Input.Gender,
+                        Address = Input.Address
+                    };
+
+                    _context.Patients.Add(patient);
+                    await _context.SaveChangesAsync();
+
+                    // email confirm (kept as-is)
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -167,18 +175,19 @@ namespace Online_Healthcare_Appointment_System.Areas.Identity.Pages.Account
                     else
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+                        return LocalRedirect(returnUrl);   // or RedirectToAction("Index","PatientDashboard")
                     }
                 }
+
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
+
 
         private ApplicationUser CreateUser()
         {

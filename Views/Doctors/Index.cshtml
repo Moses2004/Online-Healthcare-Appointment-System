@@ -48,11 +48,21 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Specialization.SpecializationId)
             </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.DoctorId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.DoctorId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.DoctorId">Delete</a>
-            </td>
+                <td>
+                    @if (!item.IsApproved)
+                    {
+                        <a asp-action="Approve" asp-route-id="@item.DoctorId" class="btn btn-success btn-sm">Approve</a>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Approved</span>
+                    }
+
+                    <a asp-action="Remove" asp-route-id="@item.DoctorId" class="btn btn-danger btn-sm">Remove</a>
+                    <a asp-action="Edit" asp-route-id="@item.DoctorId" class="btn btn-primary btn-sm">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.DoctorId" class="btn btn-info btn-sm">Details</a>
+                </td>
+
         </tr>
 }
     </tbody>

@@ -1,48 +1,88 @@
 ﻿@model Online_Healthcare_Appointment_System.Models.Appointment
+@using System.Linq
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Appointment Details";
 }
 
-<h1>Details</h1>
+<h2>Appointment Details</h2>
+
+<hr />
 
 <div>
-    <h4>Appointment</h4>
-    <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AppointmentDate)
+        <dt class="col-sm-3">
+            Patient
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AppointmentDate)
+        <dd class="col-sm-9">
+            @Model.Patient?.Name
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
+
+        <dt class="col-sm-3">
+            Doctor
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
+        <dd class="col-sm-9">
+            @Model.Doctor?.Name
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Notes)
+
+        <dt class="col-sm-3">
+            Appointment Date
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Notes)
+        <dd class="col-sm-9">
+            @Model.AppointmentDate.ToString("f")
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Patient)
+
+        <dt class="col-sm-3">
+            Status
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Patient.PatientId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Doctor)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Doctor.DoctorId)
+        <dd class="col-sm-9">
+            @Model.Status
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.AppointmentId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="mt-3">
+    <a asp-action="Edit" asp-route-id="@Model.AppointmentId" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+
+    <!-- Add Payment Button -->
+    <a asp-controller="Payments"
+       asp-action="Create"
+       asp-route-appointmentId="@Model.AppointmentId"
+       class="btn btn-success">
+        Make Payment
+    </a>
 </div>
+
+<hr />
+
+<!-- Optional: Show existing payments for this appointment -->
+<h4>Payments</h4>
+@if (Model.Payments != null && Model.Payments.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model.Payments)
+            {
+                <tr>
+                    <td>@p.Amount.ToString("C")</td>
+                    <td>@p.PaymentMethod</td>
+                    <td>@p.Status</td>
+                    <td>@p.PaymentDate.ToString("g")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No payments made for this appointment yet.</p>
+}

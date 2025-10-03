@@ -84,9 +84,82 @@ namespace Online_Healthcare_Appointment_System.Controllers
                         Status = a.Status
                     })
                     .ToList();
+
+                vm.RecentFeedbacks = _context.Feedbacks
+                    .Include(f => f.Patient)
+                    .Where(f => f.DoctorId == doctor.DoctorId)
+                    .OrderByDescending(f => f.DateSubmitted)
+                    .Take(5)
+                    .ToList();
+
             }
 
             return View(vm);
         }
+        public async Task<IActionResult> AllUpcoming(int page = 1, int pageSize = 10)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var doctor = _context.Doctors.FirstOrDefault(d => d.UserId == user.Id);
+            if (doctor == null) return NotFound();
+
+            var query = _context.Appointments
+                .Include(a => a.Patient)
+                .Where(a => a.DoctorId == doctor.DoctorId && a.AppointmentDate >= DateTime.Now)
+                .OrderBy(a => a.AppointmentDate);
+
+            var totalCount = await query.CountAsync();
+            var items = await query.Skip((page - 1) * pageSize).Take(pageSize)
+                .Select(a => new AppointmentInfo
+                {
+                    AppointmentDate = a.AppointmentDate,
+                    PatientName = a.Patient.Name,
+                    Status = a.Status
+                })
+                .ToListAsync();
+
+            var result = new PagedResult<AppointmentInfo>
+            {
+                Items = items,
+                PageNumber = page,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
+
+            return View(result);
+        }
+
+        public async Task<IActionResult> AllPrevious(int page = 1, int pageSize = 10)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var doctor = _context.Doctors.FirstOrDefault(d => d.UserId == user.Id);
+            if (doctor == null) return NotFound();
+
+            var query = _context.Appointments
+                .Include(a => a.Patient)
+                .Where(a => a.DoctorId == doctor.DoctorId && a.AppointmentDate < DateTime.Now)
+                .OrderByDescending(a => a.AppointmentDate);
+
+            var totalCount = await query.CountAsync();
+            var items = await query.Skip((page - 1) * pageSize).Take(pageSize)
+                .Select(a => new AppointmentInfo
+                {
+                    AppointmentDate = a.AppointmentDate,
+                    PatientName = a.Patient.Name,
+                    Status = a.Status
+                })
+                .ToListAsync();
+
+            var result = new PagedResult<AppointmentInfo>
+            {
+                Items = items,
+                PageNumber = page,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
+
+            return View(result);
+        }
+
+
     }
 }

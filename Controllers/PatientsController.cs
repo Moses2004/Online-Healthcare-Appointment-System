@@ -48,7 +48,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         // GET: Patients/Create
         public IActionResult Create()
         {
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email");
             return View();
         }
 
@@ -65,7 +65,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", patient.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", patient.UserId);
             return View(patient);
         }
 
@@ -82,7 +82,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
             {
                 return NotFound();
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", patient.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", patient.UserId);
             return View(patient);
         }
 
@@ -118,7 +118,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", patient.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", patient.UserId);
             return View(patient);
         }
 

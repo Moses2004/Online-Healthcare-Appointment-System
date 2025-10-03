@@ -14,5 +14,7 @@ namespace Online_Healthcare_Appointment_System.Models
         // Navigation
         public Patient Patient { get; set; }
         public Doctor Doctor { get; set; }
+
+        public ICollection<Payment> Payments { get; set; } = new List<Payment>();
     }
 }

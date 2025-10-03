@@ -1,0 +1,65 @@
+﻿@model Online_Healthcare_Appointment_System.Models.ViewModels.PagedResult<Online_Healthcare_Appointment_System.Models.ViewModels.AppointmentInfo>
+
+@{
+    ViewData["Title"] = "All Previous Appointments";
+}
+
+<h2>All Previous Appointments</h2>
+
+@if (Model.Items.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Patient</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var appt in Model.Items)
+            {
+                <tr>
+                    <td>@appt.AppointmentDate.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@appt.PatientName</td>
+                    <td>@appt.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <nav>
+        <ul class="pagination">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="AllPrevious" asp-route-page="@(Model.PageNumber - 1)">Previous</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+            }
+
+            <li class="page-item disabled"><span class="page-link">Page @Model.PageNumber of @Model.TotalPages</span></li>
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="AllPrevious" asp-route-page="@(Model.PageNumber + 1)">Next</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+            }
+        </ul>
+    </nav>
+}
+else
+{
+    <p>No previous appointments found.</p>
+}
+
+<a asp-action="Index" class="btn btn-secondary">Back to Dashboard</a>

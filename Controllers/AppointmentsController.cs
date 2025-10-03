@@ -40,6 +40,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
             var appointment = await _context.Appointments
                 .Include(a => a.Doctor)
                 .Include(a => a.Patient)
+                .Include(a => a.Payments)
                 .FirstOrDefaultAsync(m => m.AppointmentId == id);
             if (appointment == null)
             {
@@ -90,7 +91,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
                 appointment.PatientId = patient.PatientId;
                 appointment.Status = "Pending";
 
-                // ✅ Important: clear validation for these fields
+                //  clear validation for these fields
                 ModelState.Remove("PatientId");
                 ModelState.Remove("Status");
                 ModelState.Remove("Patient");

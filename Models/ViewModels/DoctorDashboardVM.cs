@@ -18,5 +18,8 @@ namespace Online_Healthcare_Appointment_System.Models.ViewModels
         public List<AppointmentInfo> PreviousAppointments { get; set; } = new();
         public int TodayCount { get; set; }
         public int ThisWeekCount { get; set; }
+
+        public List<Feedback> RecentFeedbacks { get; set; } = new();
+
     }
 }

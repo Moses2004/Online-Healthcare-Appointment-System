@@ -1,4 +1,8 @@
 ﻿@model IEnumerable<Online_Healthcare_Appointment_System.Models.Feedback>
+@if (User.IsInRole("Patient"))
+{
+    <p><a asp-action="Create" class="btn btn-success">Create New</a></p>
+}
 
 @{
     ViewData["Title"] = "Index";
@@ -43,10 +47,10 @@
                 @Html.DisplayFor(modelItem => item.DateSubmitted)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Patient.PatientId)
+                @Html.DisplayFor(modelItem => item.Patient.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Doctor.DoctorId)
+                @Html.DisplayFor(modelItem => item.Doctor.Name)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.FeedbackId">Edit</a> |

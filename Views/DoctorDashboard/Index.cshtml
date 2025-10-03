@@ -6,6 +6,8 @@
 
 <h2>Doctor Dashboard</h2>
 <p><strong>Welcome, Dr. @Model.DoctorName</strong></p>
+<a asp-action="AllUpcoming" class="btn btn-info btn-sm">See All Upcoming</a>
+<a asp-action="AllPrevious" class="btn btn-info btn-sm">See All Previous</a>
 
 <div class="row">
     <div class="col-md-6">
@@ -77,6 +79,25 @@ else
         </tbody>
     </table>
 }
+<hr />
+<h3>Recent Feedback</h3>
+@if (Model.RecentFeedbacks.Any())
+{
+    <ul>
+        @foreach (var fb in Model.RecentFeedbacks)
+        {
+            <li>
+                <strong>@fb.Patient.Name:</strong>
+                @fb.Rating stars - "@fb.Comments" (@fb.DateSubmitted.ToString("yyyy-MM-dd"))
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No feedback yet.</p>
+}
+
 else
 {
     <p>No previous appointments found.</p>

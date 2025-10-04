@@ -5,31 +5,37 @@
 }
 
 <h2>Create Payment</h2>
-
 <hr />
 
 <div class="row">
     <div class="col-md-6">
-        <form asp-action="Create" method="post">
-            @* Hidden AppointmentId *@
-            <input type="hidden" asp-for="AppointmentId" />
+        <!-- ✅ FORM: make sure to specify method="post" -->
+        <form asp-controller="Payments" asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
 
+            <!-- ✅ Hidden AppointmentId to link payment to appointment -->
+            <input type="hidden" asp-for="AppointmentId" value="@Model.AppointmentId" />
+
+            <!-- Patient info -->
             <div class="form-group">
                 <label>Patient</label>
                 <p class="form-control-plaintext">@ViewBag.PatientName</p>
             </div>
 
+            <!-- Doctor info -->
             <div class="form-group">
                 <label>Doctor</label>
                 <p class="form-control-plaintext">@ViewBag.DoctorName</p>
             </div>
 
+            <!-- Payment amount -->
             <div class="form-group">
                 <label asp-for="Amount" class="control-label"></label>
                 <input asp-for="Amount" class="form-control" />
                 <span asp-validation-for="Amount" class="text-danger"></span>
             </div>
 
+            <!-- Payment method -->
             <div class="form-group">
                 <label asp-for="PaymentMethod" class="control-label"></label>
                 <select asp-for="PaymentMethod" class="form-control">
@@ -42,8 +48,7 @@
                 <span asp-validation-for="PaymentMethod" class="text-danger"></span>
             </div>
 
-            @* PaymentDate & Status will be set automatically in controller *@
-
+            <!-- Submit + Back buttons -->
             <div class="form-group mt-3">
                 <button type="submit" class="btn btn-primary">Submit Payment</button>
                 <a asp-action="Index" class="btn btn-secondary">Back to List</a>

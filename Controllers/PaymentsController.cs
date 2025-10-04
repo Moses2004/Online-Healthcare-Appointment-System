@@ -7,24 +7,64 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Online_Healthcare_Appointment_System.Data;
 using Online_Healthcare_Appointment_System.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Online_Healthcare_Appointment_System.Controllers
 {
+    [Authorize]
     public class PaymentsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public PaymentsController(ApplicationDbContext context)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public PaymentsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Payments
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Payments.Include(p => p.Appointment);
-            return View(await applicationDbContext.ToListAsync());
+            var user = await _userManager.GetUserAsync(User);
+
+            IQueryable<Payment> query = _context.Payments
+                .Include(p => p.Appointment)
+                .ThenInclude(a => a.Patient)
+                .Include(p => p.Appointment.Doctor);
+
+            if (User.IsInRole("Admin"))
+            {
+                // Admin sees everything
+                return View(await query.ToListAsync());
+            }
+            else if (User.IsInRole("Doctor"))
+            {
+                var doctor = await _context.Doctors
+                    .FirstOrDefaultAsync(d => d.UserId == user.Id);
+
+                if (doctor == null)
+                    return Forbid();
+
+                query = query.Where(p => p.Appointment.DoctorId == doctor.DoctorId);
+                return View(await query.ToListAsync());
+            }
+            else if (User.IsInRole("Patient"))
+            {
+                var patient = await _context.Patients
+                    .FirstOrDefaultAsync(p => p.UserId == user.Id);
+
+                if (patient == null)
+                    return Forbid();
+
+                query = query.Where(p => p.Appointment.PatientId == patient.PatientId);
+                return View(await query.ToListAsync());
+            }
+
+            return Forbid();
         }
+
 
         // GET: Payments/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -74,15 +114,31 @@ namespace Online_Healthcare_Appointment_System.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("AppointmentId,Amount,PaymentMethod")] Payment payment)
         {
+            // Remove unrelated navigation and computed fields from validation
+            ModelState.Remove("Appointment");
+            ModelState.Remove("Status");
+
             if (ModelState.IsValid)
             {
                 payment.PaymentDate = DateTime.Now;
-                payment.Status = "Paid"; // or "Pending" if waiting for confirmation
+                payment.Status = "Paid";
 
                 _context.Add(payment);
                 await _context.SaveChangesAsync();
+
+                Console.WriteLine("✅ Payment saved successfully!");
                 return RedirectToAction("Details", "Appointments", new { id = payment.AppointmentId });
             }
+
+            // Debug invalid fields
+            foreach (var item in ModelState)
+            {
+                if (item.Value.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
+                {
+                    Console.WriteLine($"❌ Invalid field: {item.Key}");
+                }
+            }
+
             return View(payment);
         }
 

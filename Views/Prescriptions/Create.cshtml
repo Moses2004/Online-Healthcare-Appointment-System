@@ -1,47 +1,37 @@
 ﻿@model Online_Healthcare_Appointment_System.Models.Prescription
-
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Prescription";
 }
 
-<h1>Create</h1>
+<h2>Create Prescription</h2>
 
-<h4>Prescription</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="AppointmentId" class="control-label"></label>
-                <select asp-for="AppointmentId" class ="form-control" asp-items="ViewBag.AppointmentId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="DoctorNotes" class="control-label"></label>
-                <input asp-for="DoctorNotes" class="form-control" />
-                <span asp-validation-for="DoctorNotes" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PrescriptionDetails" class="control-label"></label>
-                <input asp-for="PrescriptionDetails" class="form-control" />
-                <span asp-validation-for="PrescriptionDetails" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DateIssued" class="control-label"></label>
-                <input asp-for="DateIssued" class="form-control" />
-                <span asp-validation-for="DateIssued" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="AppointmentId" class="form-label">Appointment</label>
+        <select asp-for="AppointmentId" asp-items="ViewBag.AppointmentId" class="form-select"></select>
+        <span asp-validation-for="AppointmentId" class="text-danger"></span>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+    <div class="mb-3">
+        <label asp-for="PrescriptionDetails" class="form-label"></label>
+        <textarea asp-for="PrescriptionDetails" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="PrescriptionDetails" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DoctorNotes" class="form-label"></label>
+        <textarea asp-for="DoctorNotes" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="DoctorNotes" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Prescription</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
+</form>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial" />
 }

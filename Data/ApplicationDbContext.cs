@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Online_Healthcare_Appointment_System.Models;
+using System.Reflection.Emit;
 
 namespace Online_Healthcare_Appointment_System.Data
 {
@@ -42,6 +43,17 @@ namespace Online_Healthcare_Appointment_System.Data
                 .WithMany()
                 .HasForeignKey(a => a.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Prescription>()
+                 .HasIndex(p => p.AppointmentId)
+                 .IsUnique();
+
+            builder.Entity<Prescription>()
+                .HasOne(p => p.Appointment)
+                .WithOne(a => a.Prescription)                // requires Appointment.Prescription nav
+                .HasForeignKey<Prescription>(p => p.AppointmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

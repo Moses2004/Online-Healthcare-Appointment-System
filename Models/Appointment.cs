@@ -16,5 +16,7 @@ namespace Online_Healthcare_Appointment_System.Models
         public Doctor Doctor { get; set; }
 
         public ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
+        public Prescription Prescription { get; set; } // one-to-one back reference
     }
 }

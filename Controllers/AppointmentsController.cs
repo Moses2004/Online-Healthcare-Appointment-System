@@ -96,6 +96,8 @@ namespace Online_Healthcare_Appointment_System.Controllers
                 ModelState.Remove("Status");
                 ModelState.Remove("Patient");
                 ModelState.Remove("Doctor");
+                ModelState.Remove("Prescription");
+
             }
 
             if (ModelState.IsValid)

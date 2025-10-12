@@ -1,52 +1,53 @@
 ﻿@model Online_Healthcare_Appointment_System.Models.Doctor
-
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Doctor";
 }
 
-<h1>Edit</h1>
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+            <h4 class="fw-bold text-primary mb-0">Edit Doctor</h4>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">← Back</a>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit">
+                <input type="hidden" asp-for="DoctorId" />
 
-<h4>Doctor</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="DoctorId" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SpecializationId" class="control-label"></label>
-                <select asp-for="SpecializationId" class="form-control" asp-items="ViewBag.SpecializationId"></select>
-                <span asp-validation-for="SpecializationId" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Availability" /> @Html.DisplayNameFor(model => model.Availability)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="ConsultationFee" class="control-label"></label>
-                <input asp-for="ConsultationFee" class="form-control" />
-                <span asp-validation-for="ConsultationFee" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
-                <span asp-validation-for="UserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-semibold"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="SpecializationId" class="form-label fw-semibold">Specialization</label>
+                    <select asp-for="SpecializationId" class="form-select" asp-items="ViewBag.SpecializationId">
+                        <option value="">-- Select Specialization --</option>
+                    </select>
+                    <span asp-validation-for="SpecializationId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ConsultationFee" class="form-label fw-semibold"></label>
+                    <input asp-for="ConsultationFee" class="form-control" />
+                    <span asp-validation-for="ConsultationFee" class="text-danger"></span>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input asp-for="Availability" class="form-check-input" />
+                    <label asp-for="Availability" class="form-check-label"></label>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input asp-for="IsApproved" class="form-check-input" />
+                    <label asp-for="IsApproved" class="form-check-label"></label>
+                </div>
+
+                <button type="submit" class="btn btn-primary px-4">Update</button>
+                <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
+            </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

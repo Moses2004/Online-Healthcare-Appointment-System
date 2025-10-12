@@ -1,69 +1,104 @@
 ﻿@model IEnumerable<Online_Healthcare_Appointment_System.Models.Doctor>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Doctor Management";
 }
 
-<h1>Index</h1>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-bold text-primary">Doctor Accounts</h2>
+        <div>
+            <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-outline-secondary me-2">
+                ← Back to Dashboard
+            </a>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add Doctor
+            </a>
+        </div>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Availability)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ConsultationFee)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Specialization)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Availability)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ConsultationFee)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Specialization.SpecializationId)
-            </td>
-                <td>
-                    @if (!item.IsApproved)
-                    {
-                        <a asp-action="Approve" asp-route-id="@item.DoctorId" class="btn btn-success btn-sm">Approve</a>
-                    }
-                    else
-                    {
-                        <span class="badge bg-success">Approved</span>
-                    }
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Availability</th>
+                            <th>Consultation Fee</th>
+                            <th>Specialization</th>
+                            <th>Approved</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>
+                                    @if (item.Availability)
+                                    {
+                                        <span class="badge bg-success">Available</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Offline</span>
+                                    }
+                                </td>
+                                <td>@item.ConsultationFee.ToString("C")</td>
+                                <td>@item.Specialization?.SpecializationName</td>
+                                <td>
+                                    @if (item.IsApproved)
+                                    {
+                                        <span class="badge bg-success">Approved</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <a asp-action="Edit" asp-route-id="@item.DoctorId" class="btn btn-sm btn-outline-primary me-1">
+                                        <i class="bi bi-pencil-square"></i> Edit
+                                    </a>
+                                    <a asp-action="Details" asp-route-id="@item.DoctorId" class="btn btn-sm btn-outline-info me-1">
+                                        <i class="bi bi-info-circle"></i> Details
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.DoctorId" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (!Model.Any())
+            {
+                <p class="text-muted text-center mb-0">No doctors available.</p>
+            }
+        </div>
+    </div>
+</div>
 
-                    <a asp-action="Remove" asp-route-id="@item.DoctorId" class="btn btn-danger btn-sm">Remove</a>
-                    <a asp-action="Edit" asp-route-id="@item.DoctorId" class="btn btn-primary btn-sm">Edit</a>
-                    <a asp-action="Details" asp-route-id="@item.DoctorId" class="btn btn-info btn-sm">Details</a>
-                </td>
+<!-- Bootstrap icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-        </tr>
-}
-    </tbody>
-</table>
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        border-radius: 12px;
+    }
+
+    .btn {
+        border-radius: 8px;
+    }
+
+    h2 {
+        letter-spacing: 0.5px;
+    }
+</style>

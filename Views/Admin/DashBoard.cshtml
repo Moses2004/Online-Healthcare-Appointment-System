@@ -1,17 +1,105 @@
-﻿  @{
-  ViewData["Title"] = "Admin Dashboard";
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+    var recentAppointments = ViewData["RecentAppointments"] as IEnumerable<dynamic>;
 }
 
-<h1>Admin Dashboard</h1>
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary fw-bold">Admin Dashboard</h2>
+    <div class="d-flex gap-3 mb-4">
+    <a asp-controller="Doctors" asp-action="Index" class="btn btn-outline-primary px-4">
+        👨‍⚕️ Doctor Accounts
+    </a>
+    <a asp-controller="Patients" asp-action="Index" class="btn btn-outline-primary px-4">
+        🧑‍🤝‍🧑 Patient Accounts
+    </a>
+</div>
 
-<p>Total Doctors: @ViewData["DoctorCount"]</p>
-<p>Total Patients: @ViewData["PatientCount"]</p>
-<p>Total Appointments: @ViewData["AppointmentCount"]</p>
 
-<ul>
-    <li><a asp-controller="Doctors" asp-action="Index">Manage Doctors</a></li>
-    <li><a asp-controller="Patients" asp-action="Index">Manage Patients</a></li>
-    <li><a asp-controller="Specializations" asp-action="Index">Manage Specializations</a></li>
-    <li><a asp-controller="Appointments" asp-action="Index">Manage Appointments</a></li>
+    <div class="row g-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="card shadow-sm border-0 text-center p-3 hover-card">
+                <h6 class="text-secondary">Total Doctors</h6>
+                <h2 class="text-success fw-bold">@ViewData["DoctorCount"]</h2>
+            </div>
+        </div>
 
-</ul>
+        <div class="col-md-3 col-sm-6">
+            <div class="card shadow-sm border-0 text-center p-3 hover-card">
+                <h6 class="text-secondary">Total Patients</h6>
+                <h2 class="text-primary fw-bold">@ViewData["PatientCount"]</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="card shadow-sm border-0 text-center p-3 hover-card">
+                <h6 class="text-secondary">Appointments</h6>
+                <h2 class="text-info fw-bold">@ViewData["AppointmentCount"]</h2>
+            </div>
+        </div>
+
+       
+    </div>
+
+    <div class="card mt-5 shadow-sm border-0 rounded-3">
+        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold text-primary">Recent Appointments</h5>
+            <a asp-controller="Appointments" asp-action="Index" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="card-body">
+            @if (recentAppointments != null && recentAppointments.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in recentAppointments)
+                            {
+                                <tr>
+                                    <td>@item.PatientName</td>
+                                    <td>@item.DoctorName</td>
+                                    <td>@item.AppointmentDate.ToString("dd MMM yyyy")</td>
+                                    <td>
+                                        <span class="badge bg-@(item.Status == "Completed" ? "success" : item.Status == "Pending" ? "warning" : "secondary")">
+                                            @item.Status
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-0">No recent appointments found.</p>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .hover-card {
+        transition: all 0.2s ease-in-out;
+        border-radius: 12px;
+    }
+
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+</style>

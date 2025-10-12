@@ -1,28 +1,30 @@
 ﻿@model Online_Healthcare_Appointment_System.Models.Appointment
-
 @{
     ViewData["Title"] = "Update Appointment Status";
 }
 
-<h2>Update Appointment Status</h2>
-
-<div>
-    <h4>Appointment with @Model.Patient.Name → @Model.Doctor.Name</h4>
-    <hr />
-    <form asp-action="UpdateStatus" method="post">
-        <input type="hidden" name="id" value="@Model.AppointmentId" />
-
-        <div class="form-group">
-            <label>Status</label>
-            <select name="status" class="form-control">
-                @foreach (var s in (List<string>)ViewData["Statuses"])
-                {
-                    <option value="@s" selected="@(s == Model.Status ? "selected" : null)">@s</option>
-                }
-            </select>
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+            <h4 class="fw-bold text-primary mb-0">Update Appointment Status</h4>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">← Back</a>
         </div>
+        <div class="card-body">
+            <form asp-action="UpdateStatus">
+                <input type="hidden" asp-for="AppointmentId" />
 
-        <button type="submit" class="btn btn-primary mt-2">Save</button>
-        <a asp-action="Index" class="btn btn-secondary mt-2">Cancel</a>
-    </form>
+                <div class="mb-3">
+                    <label asp-for="Status" class="form-label fw-semibold"></label>
+                    <select asp-for="Status" class="form-select">
+                        <option>Pending</option>
+                        <option>Completed</option>
+                        <option>Cancelled</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-success px-4">Update</button>
+                <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
+            </form>
+        </div>
+    </div>
 </div>

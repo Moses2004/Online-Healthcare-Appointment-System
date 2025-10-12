@@ -22,8 +22,13 @@ namespace Online_Healthcare_Appointment_System.Controllers
         // GET: Doctors
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Doctors.Include(d => d.Specialization).Include(d => d.User);
-            return View(await applicationDbContext.ToListAsync());
+            // Include Specialization and User info
+            var doctors = await _context.Doctors
+                .Include(d => d.Specialization)
+                .Include(d => d.User)
+                .ToListAsync();
+
+            return View(doctors);
         }
 
         // GET: Doctors/Details/5
@@ -38,6 +43,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
                 .Include(d => d.Specialization)
                 .Include(d => d.User)
                 .FirstOrDefaultAsync(m => m.DoctorId == id);
+
             if (doctor == null)
             {
                 return NotFound();
@@ -49,17 +55,16 @@ namespace Online_Healthcare_Appointment_System.Controllers
         // GET: Doctors/Create
         public IActionResult Create()
         {
-            ViewData["SpecializationId"] = new SelectList(_context.Specializations, "SpecializationId", "SpecializationId");
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
+            // show names in dropdown, not IDs
+            ViewData["SpecializationId"] = new SelectList(_context.Specializations, "SpecializationId", "SpecializationName");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email");
             return View();
         }
 
         // POST: Doctors/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DoctorId,Name,SpecializationId,Availability,ConsultationFee,UserId")] Doctor doctor)
+        public async Task<IActionResult> Create([Bind("DoctorId,Name,SpecializationId,Availability,ConsultationFee,UserId,IsApproved")] Doctor doctor)
         {
             if (ModelState.IsValid)
             {
@@ -67,6 +72,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["SpecializationId"] = new SelectList(_context.Specializations, "SpecializationId", "SpecializationName", doctor.SpecializationId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", doctor.UserId);
             return View(doctor);
@@ -85,17 +91,16 @@ namespace Online_Healthcare_Appointment_System.Controllers
             {
                 return NotFound();
             }
-            ViewData["SpecializationId"] = new SelectList(_context.Specializations, "SpecializationId", "SpecializationId", doctor.SpecializationId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", doctor.UserId);
+
+            ViewData["SpecializationId"] = new SelectList(_context.Specializations, "SpecializationId", "SpecializationName", doctor.SpecializationId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", doctor.UserId);
             return View(doctor);
         }
 
         // POST: Doctors/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DoctorId,Name,SpecializationId,Availability,ConsultationFee,UserId")] Doctor doctor)
+        public async Task<IActionResult> Edit(int id, [Bind("DoctorId,Name,SpecializationId,Availability,ConsultationFee,UserId,IsApproved")] Doctor doctor)
         {
             if (id != doctor.DoctorId)
             {
@@ -122,8 +127,9 @@ namespace Online_Healthcare_Appointment_System.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SpecializationId"] = new SelectList(_context.Specializations, "SpecializationId", "SpecializationId", doctor.SpecializationId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", doctor.UserId);
+
+            ViewData["SpecializationId"] = new SelectList(_context.Specializations, "SpecializationId", "SpecializationName", doctor.SpecializationId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", doctor.UserId);
             return View(doctor);
         }
 
@@ -139,6 +145,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
                 .Include(d => d.Specialization)
                 .Include(d => d.User)
                 .FirstOrDefaultAsync(m => m.DoctorId == id);
+
             if (doctor == null)
             {
                 return NotFound();
@@ -161,6 +168,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
         // Approve Doctor
         public async Task<IActionResult> Approve(int id)
         {

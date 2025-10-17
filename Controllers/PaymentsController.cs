@@ -25,6 +25,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         }
 
         // GET: Payments
+        // GET: Payments
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -36,34 +37,21 @@ namespace Online_Healthcare_Appointment_System.Controllers
 
             if (User.IsInRole("Admin"))
             {
-                // Admin sees everything
-                return View(await query.ToListAsync());
-            }
-            else if (User.IsInRole("Doctor"))
-            {
-                var doctor = await _context.Doctors
-                    .FirstOrDefaultAsync(d => d.UserId == user.Id);
-
-                if (doctor == null)
-                    return Forbid();
-
-                query = query.Where(p => p.Appointment.DoctorId == doctor.DoctorId);
                 return View(await query.ToListAsync());
             }
             else if (User.IsInRole("Patient"))
             {
-                var patient = await _context.Patients
-                    .FirstOrDefaultAsync(p => p.UserId == user.Id);
-
-                if (patient == null)
-                    return Forbid();
+                var patient = await _context.Patients.FirstOrDefaultAsync(p => p.UserId == user.Id);
+                if (patient == null) return Forbid();
 
                 query = query.Where(p => p.Appointment.PatientId == patient.PatientId);
                 return View(await query.ToListAsync());
             }
 
+            //  Block doctors from payments
             return Forbid();
         }
+
 
 
         // GET: Payments/Details/5
@@ -114,7 +102,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("AppointmentId,Amount,PaymentMethod")] Payment payment)
         {
-            // Remove unrelated navigation and computed fields from validation
+            //  Ignore navigation props
             ModelState.Remove("Appointment");
             ModelState.Remove("Status");
 
@@ -124,13 +112,25 @@ namespace Online_Healthcare_Appointment_System.Controllers
                 payment.Status = "Paid";
 
                 _context.Add(payment);
+
+                // After successful payment — update appointment status
+                var appointment = await _context.Appointments.FindAsync(payment.AppointmentId);
+                if (appointment != null)
+                {
+                    if (appointment.Status == "Approved")
+                    {
+                        appointment.Status = "Completed";
+                        _context.Update(appointment);
+                    }
+                }
+
                 await _context.SaveChangesAsync();
 
-                Console.WriteLine("✅ Payment saved successfully!");
+                TempData["SuccessMessage"] = "Payment successful! Appointment marked as Completed.";
                 return RedirectToAction("Details", "Appointments", new { id = payment.AppointmentId });
             }
 
-            // Debug invalid fields
+            //  Debug invalid fields
             foreach (var item in ModelState)
             {
                 if (item.Value.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
@@ -141,6 +141,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
 
             return View(payment);
         }
+
 
 
         // GET: Payments/Edit/5

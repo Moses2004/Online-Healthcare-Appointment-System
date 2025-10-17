@@ -9,7 +9,7 @@ namespace Online_Healthcare_Appointment_System.Models
         public int DoctorId { get; set; }       // FK
         public DateTime AppointmentDate { get; set; }
         public string Status { get; set; }
-        public string Notes { get; set; }
+        public string ? Notes { get; set; }
 
         // Navigation
         public Patient Patient { get; set; }

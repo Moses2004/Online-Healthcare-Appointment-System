@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Online_Healthcare_Appointment_System.Data;
 using Online_Healthcare_Appointment_System.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Online_Healthcare_Appointment_System.Controllers
 {
+    [Authorize]
     public class PatientsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,13 +23,21 @@ namespace Online_Healthcare_Appointment_System.Controllers
         }
 
         // GET: Patients
+        [Authorize(Roles = "Admin,Doctor")]
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Patients.Include(p => p.User);
             return View(await applicationDbContext.ToListAsync());
         }
 
+        // Redirect to Identity Manage Page
+        public IActionResult ManageProfile()
+        {
+            return Redirect("/Identity/Account/Manage");
+        }
+
         // GET: Patients/Details/5
+        [Authorize(Roles = "Admin,Doctor")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -46,6 +57,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         }
 
         // GET: Patients/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email");
@@ -55,6 +67,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         // POST: Patients/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("PatientId,Name,DOB,Gender,Address,UserId")] Patient patient)
@@ -70,6 +83,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         }
 
         // GET: Patients/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -89,6 +103,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         // POST: Patients/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("PatientId,Name,DOB,Gender,Address,UserId")] Patient patient)
@@ -123,6 +138,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         }
 
         // GET: Patients/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -142,6 +158,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         }
 
         // POST: Patients/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

@@ -23,7 +23,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
             _userManager = userManager;
         }
 
-        // 🩺 Helper: get current DoctorId
+        // 🩺 Helper: Get current DoctorId
         private async Task<int?> GetCurrentDoctorIdAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -35,7 +35,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
             return doctor?.DoctorId;
         }
 
-        // 👩‍🦰 Helper: get current PatientId
+        // 👩‍🦰 Helper: Get current PatientId
         private async Task<int?> GetCurrentPatientIdAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -87,7 +87,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         }
 
         // ============================================================
-        // ====================== DETAILS ==============================
+        // ====================== DETAILS =============================
         // ============================================================
 
         [Authorize]
@@ -133,12 +133,13 @@ namespace Online_Healthcare_Appointment_System.Controllers
             var doctorId = await GetCurrentDoctorIdAsync();
             if (doctorId == null) return Forbid();
 
+            // ✅ Only show appointments that are APPROVED and have no prescription yet
             var eligible = await _context.Appointments
                 .AsNoTracking()
                 .Include(a => a.Patient)
                 .Include(a => a.Prescription)
                 .Where(a => a.DoctorId == doctorId &&
-                            (a.Status == "Completed" || a.Status == "Done") &&
+                            a.Status == "Approved" &&
                             a.Prescription == null)
                 .OrderByDescending(a => a.AppointmentDate)
                 .Select(a => new
@@ -173,8 +174,8 @@ namespace Online_Healthcare_Appointment_System.Controllers
             {
                 if (appt.DoctorId != doctorId)
                     ModelState.AddModelError("", "You can only prescribe for your own appointments.");
-                if (!(appt.Status == "Completed" || appt.Status == "Done"))
-                    ModelState.AddModelError("", "Prescription allowed only for completed appointments.");
+                if (appt.Status != "Approved")
+                    ModelState.AddModelError("", "Prescription allowed only for approved appointments.");
                 if (appt.Prescription != null)
                     ModelState.AddModelError("", "This appointment already has a prescription.");
             }
@@ -188,10 +189,14 @@ namespace Online_Healthcare_Appointment_System.Controllers
                     .Include(a => a.Patient)
                     .Include(a => a.Prescription)
                     .Where(a => a.DoctorId == doctorId &&
-                                (a.Status == "Completed" || a.Status == "Done") &&
+                                a.Status == "Approved" &&
                                 a.Prescription == null)
                     .OrderByDescending(a => a.AppointmentDate)
-                    .Select(a => new { a.AppointmentId, Label = $"Appt #{a.AppointmentId} — {a.AppointmentDate:g} — {a.Patient.Email}" })
+                    .Select(a => new
+                    {
+                        a.AppointmentId,
+                        Label = $"Appt #{a.AppointmentId} — {a.AppointmentDate:g} — {a.Patient.Email}"
+                    })
                     .ToListAsync();
 
                 ViewBag.AppointmentId = new SelectList(eligible, "AppointmentId", "Label", model.AppointmentId);
@@ -205,6 +210,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
                 PrescriptionDetails = model.PrescriptionDetails,
                 DateIssued = DateTime.UtcNow
             };
+
             _context.Prescriptions.Add(entity);
             await _context.SaveChangesAsync();
 

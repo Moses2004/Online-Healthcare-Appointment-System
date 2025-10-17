@@ -1,62 +1,118 @@
 ﻿@model IEnumerable<Online_Healthcare_Appointment_System.Models.Prescription>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<Online_Healthcare_Appointment_System.Models.ApplicationUser> UserManager
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Prescriptions";
+
+    bool isAdmin = User.IsInRole("Admin");
+    bool isDoctor = User.IsInRole("Doctor");
+    bool isPatient = User.IsInRole("Patient");
+
+    // Dynamic dashboard path
+    string backController = isAdmin ? "Admin" : (isDoctor ? "DoctorDashboard" : "PatientDashboard");
+    string backAction = isAdmin ? "Dashboard" : "Index";
 }
 
-<h1>Index</h1>
+<div class="container mt-4">
+    <h2 class="text-center text-success fw-bold mb-4">
+        <i class="bi bi-capsule"></i> Prescriptions
+    </h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.DoctorNotes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PrescriptionDetails)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateIssued)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Appointment)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.DoctorNotes)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PrescriptionDetails)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateIssued)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Appointment.AppointmentId)
-            </td>
-            <td>
-               
-                <a asp-action="Details" asp-route-id="@item.PrescriptionId">Details</a> |
-               
-            </td>
-            @if (User.IsInRole("Doctor"))
-{
-    <td>
-        <a asp-action="Edit" asp-route-id="@item.PrescriptionId">Edit</a> |
-        <a asp-action="Delete" asp-route-id="@item.PrescriptionId">Delete</a>
-    </td>
-}
+    <!-- Back & Add Buttons -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a asp-controller="@backController" asp-action="@backAction" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Back to Dashboard
+        </a>
 
+        @if (isAdmin || isDoctor)
+        {
+            <a asp-action="Create" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Add Prescription
+            </a>
+        }
+    </div>
 
-        </tr>
-}
-    </tbody>
-</table>
+    <!-- Prescription Table -->
+    <div class="card shadow-sm border-0 p-3">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-success">
+                    <tr>
+                        <th>Date Issued</th>
+                        <th>Appointment</th>
+                        <th>Prescription Details</th>
+                        <th>Doctor Notes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.DateIssued.ToString("dd MMM yyyy")</td>
+                                <td>@item.Appointment?.AppointmentId</td>
+                                <td>
+                                    @(string.IsNullOrEmpty(item.PrescriptionDetails)
+                                                                ? "-"
+                                                                : (item.PrescriptionDetails.Length > 60
+                                                                ? item.PrescriptionDetails.Substring(0, 60) + "..."
+                                                                : item.PrescriptionDetails))
+                                                                                        </td>
+                                                                                        <td>
+                                    @(string.IsNullOrEmpty(item.DoctorNotes)
+                                                                ? "-"
+                                                                : (item.DoctorNotes.Length > 60
+                                                                ? item.DoctorNotes.Substring(0, 60) + "..."
+                                                                : item.DoctorNotes))
+                        </td>
+                        <td>
+                            @if (isAdmin || isDoctor)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.PrescriptionId" class="btn btn-sm btn-info text-white">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@item.PrescriptionId" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-info-circle"></i> Details
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.PrescriptionId" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </a>
+                                    }
+                                    else if (isPatient)
+                                    {
+                                        <a asp-action="Details" asp-route-id="@item.PrescriptionId" class="btn btn-sm btn-success">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                No prescriptions found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Style -->
+<style>
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .btn i {
+        margin-right: 4px;
+    }
+</style>

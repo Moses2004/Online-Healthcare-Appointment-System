@@ -1,36 +1,53 @@
 ﻿@model Online_Healthcare_Appointment_System.Models.Prescription
+
 @{
     ViewData["Title"] = "Create Prescription";
 }
 
-<h2>Create Prescription</h2>
+<div class="container mt-5">
+    <div class="card shadow-sm border-0 p-4">
+        <h3 class="text-success text-center mb-4">
+            <i class="bi bi-plus-circle"></i> Create Prescription
+        </h3>
 
-<form asp-action="Create" method="post">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-    <div class="mb-3">
-        <label asp-for="AppointmentId" class="form-label">Appointment</label>
-        <select asp-for="AppointmentId" asp-items="ViewBag.AppointmentId" class="form-select"></select>
-        <span asp-validation-for="AppointmentId" class="text-danger"></span>
+            <div class="mb-3">
+                <label asp-for="AppointmentId" class="form-label">Appointment</label>
+                <select asp-for="AppointmentId" asp-items="ViewBag.AppointmentId" class="form-select"></select>
+                <span asp-validation-for="AppointmentId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="DateIssued" class="form-label"></label>
+                <input asp-for="DateIssued" type="date" class="form-control" />
+                <span asp-validation-for="DateIssued" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PrescriptionDetails" class="form-label"></label>
+                <textarea asp-for="PrescriptionDetails" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="PrescriptionDetails" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="DoctorNotes" class="form-label"></label>
+                <textarea asp-for="DoctorNotes" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="DoctorNotes" class="text-danger"></span>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-success px-4">
+                    <i class="bi bi-check-circle"></i> Save
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </a>
+            </div>
+        </form>
     </div>
-
-
-    <div class="mb-3">
-        <label asp-for="PrescriptionDetails" class="form-label"></label>
-        <textarea asp-for="PrescriptionDetails" class="form-control" rows="4"></textarea>
-        <span asp-validation-for="PrescriptionDetails" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="DoctorNotes" class="form-label"></label>
-        <textarea asp-for="DoctorNotes" class="form-control" rows="3"></textarea>
-        <span asp-validation-for="DoctorNotes" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Save Prescription</button>
-    <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
-</form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

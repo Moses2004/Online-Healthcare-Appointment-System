@@ -1,78 +1,124 @@
 ﻿@model IEnumerable<Online_Healthcare_Appointment_System.Models.Appointment>
 
 @{
-    ViewData["Title"] = "Appointment Management";
+    ViewData["Title"] = "Appointments";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="fw-bold text-primary">Appointments</h2>
-        <div>
-            <a asp-controller="AdminDashboard" asp-action="Index" class="btn btn-outline-secondary me-2">
-                ← Back to Dashboard
-            </a>
-            <a asp-action="Create" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Add Appointment
-            </a>
-        </div>
-    </div>
+<h2 class="text-center mb-4">@ViewData["Title"]</h2>
 
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Patient</th>
-                            <th>Doctor</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th class="text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success text-center">@TempData["SuccessMessage"]</div>
+}
+
+@{
+    ViewData["Title"] = "Prescriptions";
+
+    bool isAdmin = User.IsInRole("Admin");
+    bool isDoctor = User.IsInRole("Doctor");
+    bool isPatient = User.IsInRole("Patient");
+
+    // Dynamic dashboard path
+    string backController = isAdmin ? "Admin" : (isDoctor ? "DoctorDashboard" : "PatientDashboard");
+    string backAction = isAdmin ? "Dashboard" : "Index";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a asp-controller="@backController" asp-action="@backAction" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left-circle"></i> Back to Dashboard
+    </a>
+</div>
+<div class="card shadow-sm p-3 rounded-3">
+    <table class="table table-striped table-hover align-middle">
+        <thead class="table-dark text-center">
+            <tr>
+                <th>Appointment ID</th>
+                <th>Patient</th>
+                <th>Doctor</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Notes</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="text-center">
+                <td>@item.AppointmentId</td>
+                <td>@item.Patient?.Name</td>
+                <td>@item.Doctor?.Name</td>
+                <td>@item.AppointmentDate.ToString("g")</td>
+                <td>
+                    @if (item.Status == "Pending")
+                    {
+                        <span class="badge bg-warning text-dark">Pending</span>
+                    }
+                    else if (item.Status == "Approved")
+                    {
+                        <span class="badge bg-info text-dark">Approved</span>
+                    }
+                    else if (item.Status == "Completed")
+                    {
+                        <span class="badge bg-success">Completed</span>
+                    }
+                    else if (item.Status == "Cancelled")
+                    {
+                        <span class="badge bg-danger">Cancelled</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">@item.Status</span>
+                    }
+                </td>
+                <td>@item.Notes</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.AppointmentId" 
+                       class="btn btn-sm btn-primary me-1">
+                        <i class="bi bi-eye"></i> View
+                    </a>
+
+                    @*  Only show "Edit" for Admin and Doctor *@
+                    @if (User.IsInRole("Admin") || User.IsInRole("Doctor"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.AppointmentId" 
+                           class="btn btn-sm btn-warning me-1">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+                    }
+
+                    @*  Only show "Delete" for Admin *@
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Delete" asp-route-id="@item.AppointmentId" 
+                           class="btn btn-sm btn-danger me-1">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+                    }
+
+                    @*  Only show "Pay" button for Patient (if Approved and unpaid) *@
+                    @if (User.IsInRole("Patient"))
+                    {
+                        var hasPayment = item.Payments != null && item.Payments.Any();
+                        if (!hasPayment && item.Status == "Approved")
                         {
-                            <tr>
-                                <td>@item.Patient?.Name</td>
-                                <td>@item.Doctor?.Name</td>
-                                <td>@item.AppointmentDate.ToString("dd MMM yyyy - hh:mm tt")</td>
-                                <td>
-                                    <span class="badge bg-@(item.Status == "Completed" ? "success" : item.Status == "Pending" ? "warning text-dark" : "secondary")">
-                                        @item.Status
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <a asp-action="Edit" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-outline-primary me-1">
-                                        <i class="bi bi-pencil-square"></i> Edit
-                                    </a>
-                                    <a asp-action="Details" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-outline-info me-1">
-                                        <i class="bi bi-info-circle"></i> Details
-                                    </a>
-                                    <a asp-action="Delete" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-outline-danger me-1">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </a>
-                                    <a asp-action="UpdateStatus" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-outline-success">
-                                        <i class="bi bi-arrow-repeat"></i> Update Status
-                                    </a>
-                                </td>
-                            </tr>
+                            <a asp-controller="Payments"
+                               asp-action="Create"
+                               asp-route-appointmentId="@item.AppointmentId"
+                               class="btn btn-sm btn-success">
+                                <i class="bi bi-credit-card"></i> Pay
+                            </a>
                         }
-                    </tbody>
-                </table>
-            </div>
-
-            @if (!Model.Any())
-            {
-                <p class="text-muted text-center mb-0">No appointments available.</p>
-            }
-        </div>
-    </div>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
 </div>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-<style>
-    body { background-color: #f8f9fa; }
-    .card { border-radius: 12px; }
-    .btn { border-radius: 8px; }
-</style>
+@if (!Model.Any())
+{
+    <div class="alert alert-warning text-center mt-3">
+        No appointments found.
+    </div>
+}

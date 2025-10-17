@@ -1,59 +1,93 @@
 ﻿@model IEnumerable<Online_Healthcare_Appointment_System.Models.Payment>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<Online_Healthcare_Appointment_System.Models.ApplicationUser> UserManager
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Payments";
+    bool isAdmin = User.IsInRole("Admin");
+    bool isPatient = User.IsInRole("Patient");
+
+    string backController = isAdmin ? "Admin" : "PatientDashboard";
+    string backAction = isAdmin ? "Dashboard" : "Index";
 }
 
-<h1>Index</h1>
+<div class="container mt-4">
+    <h2 class="text-center text-success fw-bold mb-4">
+        <i class="bi bi-cash-stack"></i> Payments
+    </h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Amount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PaymentDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PaymentMethod)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Appointment)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Amount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PaymentDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PaymentMethod)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Appointment.AppointmentId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.PaymentId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.PaymentId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.PaymentId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a asp-controller="@backController" asp-action="@backAction" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Back to Dashboard
+        </a>
+
+    </div>
+
+    <div class="card shadow-sm border-0 p-3">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-success">
+                    <tr>
+                        <th>Payment ID</th>
+                        <th>Appointment</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.PaymentId</td>
+                                <td>@item.AppointmentId</td>
+                                <td>@item.Amount.ToString("C")</td>
+                                <td>@item.PaymentMethod</td>
+                                <td>@item.PaymentDate.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <span class="badge bg-@(item.Status == "Paid" ? "success" : "warning")">@item.Status</span>
+                                </td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@item.PaymentId" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+
+                                    @if (isAdmin)
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.PaymentId" class="btn btn-sm btn-info text-white">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.PaymentId" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-3">No payments found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .btn i {
+        margin-right: 4px;
+    }
+</style>

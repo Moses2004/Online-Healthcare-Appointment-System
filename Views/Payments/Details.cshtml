@@ -1,48 +1,38 @@
 ﻿@model Online_Healthcare_Appointment_System.Models.Payment
-
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Payment Details";
 }
+<div class="container mt-5">
+    <div class="card shadow-sm border-0 p-4">
+        <h3 class="text-success text-center mb-4">
+            <i class="bi bi-receipt"></i> Payment Details
+        </h3>
+        <dl class="row">
+            <dt class="col-sm-3 fw-bold">Payment ID</dt>
+            <dd class="col-sm-9">@Model.PaymentId</dd>
 
-<h1>Details</h1>
+            <dt class="col-sm-3 fw-bold">Appointment</dt>
+            <dd class="col-sm-9">@Model.AppointmentId</dd>
 
-<div>
-    <h4>Payment</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Amount)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Amount)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PaymentDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PaymentDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PaymentMethod)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PaymentMethod)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Appointment)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Appointment.AppointmentId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.PaymentId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+            <dt class="col-sm-3 fw-bold">Amount</dt>
+            <dd class="col-sm-9">@Model.Amount.ToString("C")</dd>
+
+            <dt class="col-sm-3 fw-bold">Payment Method</dt>
+            <dd class="col-sm-9">@Model.PaymentMethod</dd>
+
+            <dt class="col-sm-3 fw-bold">Date</dt>
+            <dd class="col-sm-9">@Model.PaymentDate.ToString("dd MMM yyyy")</dd>
+
+            <dt class="col-sm-3 fw-bold">Status</dt>
+            <dd class="col-sm-9">
+                <span class="badge bg-@(Model.Status == "Paid" ? "success" : "warning")">@Model.Status</span>
+            </dd>
+        </dl>
+
+        <div class="text-center mt-4">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left-circle"></i> Back to List
+            </a>
+        </div>
+    </div>
 </div>

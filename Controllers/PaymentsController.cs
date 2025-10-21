@@ -74,6 +74,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         }
 
         // GET: Payments/Create
+        // GET: Payments/Create
         public IActionResult Create(int appointmentId)
         {
             var appointment = _context.Appointments
@@ -83,16 +84,21 @@ namespace Online_Healthcare_Appointment_System.Controllers
 
             if (appointment == null) return NotFound();
 
+            // 👇 Automatically get consultation fee from Doctor table
             var payment = new Payment
             {
                 AppointmentId = appointment.AppointmentId,
+                Amount = appointment.Doctor != null ? appointment.Doctor.ConsultationFee : 0,  // ✅ Auto-fill amount
                 PaymentDate = DateTime.Now
             };
 
             ViewBag.PatientName = appointment.Patient?.Name;
             ViewBag.DoctorName = appointment.Doctor?.Name;
+            ViewBag.ConsultationFee = payment.Amount; // Optional, if you want to display it in view
+
             return View(payment);
         }
+
 
 
         // POST: Payments/Create

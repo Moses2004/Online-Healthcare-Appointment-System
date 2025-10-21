@@ -7,70 +7,90 @@
 
 <h2 class="text-center mb-4">@ViewData["Title"]</h2>
 
-<div class="card shadow-sm p-4 rounded-3">
-    <form asp-action="Create" method="post">
-        @Html.AntiForgeryToken()
+<div class="d-flex justify-content-center align-items-start mt-2">
+    <div class="card shadow-lg border-0 rounded-4 p-4" style="max-width: 650px; width:100%;">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
 
-        @* ====== Patient Section ====== *@
-        @if (!isPatient)
-        {
-            <div class="form-group mb-3">
-                <label asp-for="PatientId" class="form-label fw-bold"></label>
-                <select asp-for="PatientId" asp-items="ViewBag.PatientId" class="form-select">
-                    <option value="">-- Select Patient --</option>
+            @* ===== Patient ===== *@
+            @if (!isPatient)
+            {
+                <div class="mb-3">
+                    <label asp-for="PatientId" class="form-label fw-semibold">
+                        <i class="bi bi-person-circle me-1"></i>Patient
+                    </label>
+                    <select asp-for="PatientId" asp-items="ViewBag.PatientId" class="form-select rounded-pill">
+                        <option value="">-- Select Patient --</option>
+                    </select>
+                    <span asp-validation-for="PatientId" class="text-danger"></span>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" asp-for="PatientId" />
+                <div class="alert alert-info py-2 rounded-3 small">
+                    <i class="bi bi-info-circle me-1"></i>Your patient account will be automatically linked.
+                </div>
+            }
+
+            @* ===== Doctor ===== *@
+            <div class="mb-3">
+                <label asp-for="DoctorId" class="form-label fw-semibold">
+                    <i class="bi bi-person-badge me-1"></i>Doctor
+                </label>
+                <select asp-for="DoctorId" asp-items="ViewBag.DoctorId" class="form-select rounded-pill">
+                    <option value="">-- Select Doctor --</option>
                 </select>
-                <span asp-validation-for="PatientId" class="text-danger"></span>
+                <span asp-validation-for="DoctorId" class="text-danger"></span>
             </div>
-        }
-        else
-        {
-            <!-- Hidden for patient: will be auto-filled from login in controller -->
-            <input type="hidden" asp-for="PatientId" />
-            <div class="alert alert-info py-2">
-                Your patient account will be automatically linked to this appointment.
+
+            @* ===== Date/Time ===== *@
+            <div class="mb-3">
+                <label asp-for="AppointmentDate" class="form-label fw-semibold">
+                    <i class="bi bi-calendar-date me-1"></i>Date & Time
+                </label>
+                <input asp-for="AppointmentDate" type="datetime-local" class="form-control rounded-pill" />
+                <span asp-validation-for="AppointmentDate" class="text-danger"></span>
             </div>
-        }
 
-        @* ====== Doctor Section ====== *@
-        <div class="form-group mb-3">
-            <label asp-for="DoctorId" class="form-label fw-bold"></label>
-            <select asp-for="DoctorId" asp-items="ViewBag.DoctorId" class="form-select">
-                <option value="">-- Select Doctor --</option>
-            </select>
-            <span asp-validation-for="DoctorId" class="text-danger"></span>
-        </div>
+            @* ===== Notes (this is the correct field name) ===== *@
+            <div class="mb-3">
+                <label asp-for="Notes" class="form-label fw-semibold">
+                    <i class="bi bi-chat-left-text me-1"></i>Notes
+                </label>
+                <textarea asp-for="Notes" class="form-control rounded-3" rows="3" placeholder="Additional details..."></textarea>
+                <span asp-validation-for="Notes" class="text-danger"></span>
+            </div>
 
-        @* ====== Appointment Date ====== *@
-        <div class="form-group mb-3">
-            <label asp-for="AppointmentDate" class="form-label fw-bold"></label>
-            <input asp-for="AppointmentDate" class="form-control" type="datetime-local" />
-            <span asp-validation-for="AppointmentDate" class="text-danger"></span>
-        </div>
+            @* ===== Status (Admin only, optional during create) ===== *@
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="mb-3">
+                    <label asp-for="Status" class="form-label fw-semibold">
+                        <i class="bi bi-check2-circle me-1"></i>Status
+                    </label>
+                    <select asp-for="Status" class="form-select rounded-pill">
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+            }
 
-        @* ====== Notes ====== *@
-        <div class="form-group mb-3">
-            <label asp-for="Notes" class="form-label fw-bold"></label>
-            <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Add additional notes (optional)..."></textarea>
-            <span asp-validation-for="Notes" class="text-danger"></span>
-        </div>
-
-        @* ====== Status (Default Pending) ====== *@
-        <input type="hidden" asp-for="Status" value="Pending" />
-
-        @* ====== Submit Buttons ====== *@
-        <div class="form-group text-center mt-4">
-            <button type="submit" class="btn btn-primary px-4 me-2">
-                <i class="bi bi-check-circle"></i> Create Appointment
-            </button>
-            <a asp-action="Index" class="btn btn-secondary px-4">
-                <i class="bi bi-arrow-left-circle"></i> Back to List
-            </a>
-        </div>
-    </form>
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                    <i class="bi bi-arrow-left-circle me-1"></i>Back to List
+                </a>
+                <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                    <i class="bi bi-check-circle me-1"></i>Create Appointment
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

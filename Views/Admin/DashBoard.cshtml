@@ -1,108 +1,125 @@
 ﻿@{
     ViewData["Title"] = "Admin Dashboard";
-    var recentAppointments = ViewData["RecentAppointments"] as IEnumerable<dynamic>;
 }
 
-<div class="container mt-4">
-    <h2 class="mb-4 text-primary fw-bold">Admin Dashboard</h2>
-    <div class="d-flex gap-3 mb-4">
-    <a asp-controller="Doctors" asp-action="Index" class="btn btn-outline-primary px-4">
-        👨‍⚕️ Doctor Accounts
-    </a>
-    <a asp-controller="Patients" asp-action="Index" class="btn btn-outline-primary px-4">
-        🧑‍🤝‍🧑 Patient Accounts
-    </a>
-        <a asp-controller="Payments" asp-action="Index" class="btn btn-outline-primary px-4">
-            🧑‍🤝‍🧑 Payments
-        </a>
+<div class="container py-4">
+    <h2 class="fw-bold text-primary mb-4">Admin Dashboard</h2>
+
+    <!-- Summary Cards -->
+    <div class="row justify-content-center g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center py-3">
+                <i class="bi bi-person-badge fs-2 text-primary"></i>
+                <h6 class="text-muted mb-1">Total Doctors</h6>
+                <h3 class="text-primary fw-bold">@ViewData["DoctorCount"]</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center py-3">
+                <i class="bi bi-people fs-2 text-success"></i>
+                <h6 class="text-muted mb-1">Total Patients</h6>
+                <h3 class="text-success fw-bold">@ViewData["PatientCount"]</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center py-3">
+                <i class="bi bi-calendar-check fs-2 text-info"></i>
+                <h6 class="text-muted mb-1">Appointments</h6>
+                <h3 class="text-info fw-bold">@ViewData["AppointmentCount"]</h3>
+            </div>
+        </div>
+
+     
     </div>
 
-
-    <div class="row g-4">
-        <div class="col-md-3 col-sm-6">
-            <div class="card shadow-sm border-0 text-center p-3 hover-card">
-                <h6 class="text-secondary">Total Doctors</h6>
-                <h2 class="text-success fw-bold">@ViewData["DoctorCount"]</h2>
-            </div>
-        </div>
-
-        <div class="col-md-3 col-sm-6">
-            <div class="card shadow-sm border-0 text-center p-3 hover-card">
-                <h6 class="text-secondary">Total Patients</h6>
-                <h2 class="text-primary fw-bold">@ViewData["PatientCount"]</h2>
-            </div>
-        </div>
-
-        <div class="col-md-3 col-sm-6">
-            <div class="card shadow-sm border-0 text-center p-3 hover-card">
-                <h6 class="text-secondary">Appointments</h6>
-                <h2 class="text-info fw-bold">@ViewData["AppointmentCount"]</h2>
-            </div>
-        </div>
-
-       
-    </div>
-
-    <div class="card mt-5 shadow-sm border-0 rounded-3">
-        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold text-primary">Recent Appointments</h5>
-            <a asp-controller="Appointments" asp-action="Index" class="btn btn-sm btn-outline-primary">View All</a>
-        </div>
-        <div class="card-body">
-            @if (recentAppointments != null && recentAppointments.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Patient</th>
-                                <th>Doctor</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in recentAppointments)
-                            {
-                                <tr>
-                                    <td>@item.PatientName</td>
-                                    <td>@item.DoctorName</td>
-                                    <td>@item.AppointmentDate.ToString("dd MMM yyyy")</td>
-                                    <td>
-                                        <span class="badge bg-@(item.Status == "Completed" ? "success" : item.Status == "Pending" ? "warning" : "secondary")">
-                                            @item.Status
-                                        </span>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+    <!-- Quick Access Buttons -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100 text-center p-3 hover-card">
+                <div class="card-body">
+                    <i class="bi bi-person-gear fs-1 text-primary"></i>
+                    <h5 class="card-title mt-3">Manage Doctors</h5>
+                    <p class="text-muted">View and manage doctor accounts.</p>
+                    <a asp-controller="Doctors" asp-action="Index" class="btn btn-primary px-4">Go</a>
                 </div>
-            }
-            else
-            {
-                <p class="text-muted mb-0">No recent appointments found.</p>
-            }
+            </div>
         </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100 text-center p-3 hover-card">
+                <div class="card-body">
+                    <i class="bi bi-people fs-1 text-success"></i>
+                    <h5 class="card-title mt-3">Manage Patients</h5>
+                    <p class="text-muted">View and manage patient records.</p>
+                    <a asp-controller="Patients" asp-action="Index" class="btn btn-success px-4">Go</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100 text-center p-3 hover-card">
+                <div class="card-body">
+                    <i class="bi bi-credit-card-2-front fs-1 text-warning"></i>
+                    <h5 class="card-title mt-3">Manage Payments</h5>
+                    <p class="text-muted">View all payment transactions.</p>
+                    <a asp-controller="Payments" asp-action="Index" class="btn btn-warning text-white px-4">Go</a>
+                </div>
+            </div>
+        </div>
+
+         <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100 text-center p-3 hover-card">
+                <div class="card-body">
+                    <i class="bi bi-credit-card-2-front fs-1 text-warning"></i>
+                    <h5 class="card-title mt-3">Report</h5>
+                    <p class="text-muted">View all reports.</p>
+                    <a asp-controller="Reports" asp-action="Index" class="btn btn-warning text-white px-4">Go</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointments Button Section -->
+    <div class="text-center mt-5">
+        <a asp-controller="Appointments" asp-action="Index" class="btn btn-lg btn-primary px-5 py-3">
+            <i class="bi bi-calendar-event"></i> View All Appointments
+        </a>
     </div>
 </div>
 
+<!-- ✅ Styling -->
 <style>
-    body {
-        background-color: #f8f9fa;
+    .hover-card:hover {
+        transform: translateY(-5px);
+        transition: 0.3s ease;
     }
 
-    .hover-card {
-        transition: all 0.2s ease-in-out;
+    .card {
         border-radius: 12px;
     }
 
-    .hover-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    .btn-outline-primary {
+        border-width: 2px;
+        font-weight: 500;
+        transition: 0.3s ease;
     }
 
-    .table th, .table td {
-        vertical-align: middle;
+    .btn-outline-primary:hover {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .btn-primary.btn-lg {
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 40px;
+        box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        transition: 0.3s ease;
+    }
+
+    .btn-primary.btn-lg:hover {
+        transform: translateY(-3px);
     }
 </style>

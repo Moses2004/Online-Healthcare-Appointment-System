@@ -29,3 +29,53 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.login-page {
+    min-height: 100vh;
+    background: linear-gradient(to right, #007bff, #00c6ff);
+}
+
+.login-card {
+    width: 400px;
+    background-color: #fff;
+}
+
+.form-floating > label {
+    color: #666;
+}
+
+.btn-primary {
+    background: linear-gradient(to right, #007bff, #00aaff);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+    .btn-primary:hover {
+        background: linear-gradient(to right, #0062cc, #0088ff);
+        transform: translateY(-2px);
+    }
+
+.register-page {
+    min-height: 100vh;
+    background: linear-gradient(to right, #007bff, #00c6ff);
+}
+
+.register-card {
+    width: 450px;
+    background-color: #fff;
+}
+
+.form-floating > label {
+    color: #666;
+}
+
+.btn-primary {
+    background: linear-gradient(to right, #007bff, #00aaff);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+    .btn-primary:hover {
+        background: linear-gradient(to right, #0062cc, #0088ff);
+        transform: translateY(-2px);
+    }

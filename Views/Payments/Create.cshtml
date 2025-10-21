@@ -1,46 +1,49 @@
 ﻿@model Online_Healthcare_Appointment_System.Models.Payment
+
 @{
-    ViewData["Title"] = "Add Payment";
+    ViewData["Title"] = "Make Payment";
 }
 
-<div class="container mt-5">
-    <div class="card shadow-sm border-0 p-4">
-        <h3 class="text-success text-center mb-4">
-            <i class="bi bi-cash"></i> Add Payment
+<div class="d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+    <div class="card shadow-lg border-0 p-4" style="max-width: 550px; width: 100%; border-radius: 20px;">
+        <h3 class="text-center mb-4 text-primary fw-bold">
+            💳 Make Payment
         </h3>
 
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div class="mb-3 text-center">
+            <p><strong>👩‍⚕️ Doctor:</strong> @ViewBag.DoctorName</p>
+            <p><strong>🧑‍🦱 Patient:</strong> @ViewBag.PatientName</p>
+            <p><strong>💰 Consultation Fee:</strong> <span class="text-success fw-bold">@ViewBag.ConsultationFee.ToString("C")</span></p>
+        </div>
 
-            <div class="mb-3">
-                <label asp-for="AppointmentId" class="form-label">Appointment ID</label>
-                <input asp-for="AppointmentId" class="form-control" readonly />
+        <form asp-action="Create" method="post">
+            <input type="hidden" asp-for="AppointmentId" />
+
+            <div class="form-group mb-3">
+                <label asp-for="Amount" class="form-label fw-semibold">Amount</label>
+                <input asp-for="Amount" class="form-control text-center" readonly />
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Amount" class="form-label">Amount</label>
-                <input asp-for="Amount" class="form-control" />
-                <span asp-validation-for="Amount" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="PaymentMethod" class="form-label">Payment Method</label>
+            <div class="form-group mb-3">
+                <label asp-for="PaymentMethod" class="form-label fw-semibold">Payment Method</label>
                 <select asp-for="PaymentMethod" class="form-select">
-                    <option value="Cash">Cash</option>
-                    <option value="Credit Card">Credit Card</option>
-                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="">-- Select Payment Method --</option>
+                    <option>Cash</option>
+                    <option>Credit Card</option>
+                    <option>Mobile Banking</option>
+                    <option>Online Transfer</option>
                 </select>
                 <span asp-validation-for="PaymentMethod" class="text-danger"></span>
             </div>
 
-            <div class="text-center mt-4">
-                <button type="submit" class="btn btn-success px-4">
-                    <i class="bi bi-check-circle"></i> Confirm Payment
-                </button>
-                <a asp-action="Index" class="btn btn-outline-secondary px-4">
-                    <i class="bi bi-x-circle"></i> Cancel
-                </a>
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg fw-semibold">Pay Now</button>
+                <a asp-action="Index" class="btn btn-outline-secondary fw-semibold">Back to List</a>
             </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

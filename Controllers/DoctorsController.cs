@@ -20,16 +20,21 @@ namespace Online_Healthcare_Appointment_System.Controllers
         }
 
         // GET: Doctors
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            // Include Specialization and User info
-            var doctors = await _context.Doctors
+            var doctors = _context.Doctors
                 .Include(d => d.Specialization)
                 .Include(d => d.User)
-                .ToListAsync();
+                .AsQueryable();
 
-            return View(doctors);
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                doctors = doctors.Where(d => d.Name.Contains(searchString));
+            }
+
+            return View(await doctors.ToListAsync());
         }
+
 
         // GET: Doctors/Details/5
         public async Task<IActionResult> Details(int? id)

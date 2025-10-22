@@ -21,11 +21,56 @@ namespace Online_Healthcare_Appointment_System.Controllers
         }
 
         // GET: Feedbacks
+        [Authorize]
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Feedbacks.Include(f => f.Doctor).Include(f => f.Patient);
-            return View(await applicationDbContext.ToListAsync());
+            IQueryable<Feedback> feedbacks = _context.Feedbacks
+                .Include(f => f.Doctor)
+                .Include(f => f.Patient);
+
+            if (User.IsInRole("Admin"))
+            {
+                //Admin can see all feedbacks
+                return View(await feedbacks
+                    .OrderByDescending(f => f.DateSubmitted)
+                    .ToListAsync());
+            }
+            else if (User.IsInRole("Patient"))
+            {
+                // Patient sees only their own feedbacks
+                var userEmail = User.Identity.Name;
+                var patient = await _context.Patients
+                    .Include(p => p.User)
+                    .FirstOrDefaultAsync(p => p.User.Email == userEmail);
+
+                if (patient == null)
+                    return Forbid();
+
+                feedbacks = feedbacks.Where(f => f.PatientId == patient.PatientId);
+            }
+            else if (User.IsInRole("Doctor"))
+            {
+                // Doctor sees feedbacks about themselves
+                var userEmail = User.Identity.Name;
+                var doctor = await _context.Doctors
+                    .Include(d => d.User)
+                    .FirstOrDefaultAsync(d => d.User.Email == userEmail);
+
+                if (doctor == null)
+                    return Forbid();
+
+                feedbacks = feedbacks.Where(f => f.DoctorId == doctor.DoctorId);
+            }
+            else
+            {
+                return Forbid();
+            }
+
+            return View(await feedbacks
+                .OrderByDescending(f => f.DateSubmitted)
+                .ToListAsync());
         }
+
 
         // GET: Feedbacks/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -126,6 +171,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
 
 
         // GET: Feedbacks/Edit/5
+        [Authorize(Roles = "Patient")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -133,46 +179,45 @@ namespace Online_Healthcare_Appointment_System.Controllers
             var feedback = await _context.Feedbacks.FindAsync(id);
             if (feedback == null) return NotFound();
 
-            ViewData["DoctorId"] = new SelectList(_context.Doctors, "DoctorId", "Name", feedback.DoctorId);
-            ViewData["PatientId"] = new SelectList(_context.Patients, "PatientId", "Name", feedback.PatientId);
+            // Restrict editing to feedback owner
+            var userEmail = User.Identity.Name;
+            var patient = await _context.Patients
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.User.Email == userEmail);
+
+            if (patient == null || feedback.PatientId != patient.PatientId)
+                return Forbid();
+
             return View(feedback);
         }
 
         // POST: Feedbacks/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Patient")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("FeedbackId,PatientId,DoctorId,Comments,Rating,DateSubmitted")] Feedback feedback)
+        public async Task<IActionResult> Edit(int id, [Bind("FeedbackId,Comments,Rating")] Feedback updatedFeedback)
         {
-            if (id != feedback.FeedbackId)
-            {
-                return NotFound();
-            }
+            var feedback = await _context.Feedbacks.FindAsync(id);
+            if (feedback == null) return NotFound();
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(feedback);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!FeedbackExists(feedback.FeedbackId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["DoctorId"] = new SelectList(_context.Doctors, "DoctorId", "DoctorId", feedback.DoctorId);
-            ViewData["PatientId"] = new SelectList(_context.Patients, "PatientId", "PatientId", feedback.PatientId);
-            return View(feedback);
+            // Restrict to owner
+            var userEmail = User.Identity.Name;
+            var patient = await _context.Patients
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(p => p.User.Email == userEmail);
+
+            if (patient == null || feedback.PatientId != patient.PatientId)
+                return Forbid();
+
+            // Update editable fields only
+            feedback.Comments = updatedFeedback.Comments;
+            feedback.Rating = updatedFeedback.Rating;
+            feedback.DateSubmitted = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Feedbacks/Delete/5

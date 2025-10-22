@@ -26,6 +26,20 @@
     <a asp-controller="@backController" asp-action="@backAction" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left-circle"></i> Back to Dashboard
     </a>
+    @* Show search bar only if the user is Admin *@
+    @if (User.IsInRole("Admin"))
+    {
+        <form asp-controller="Appointments" asp-action="Index" method="get" class="mb-3">
+            <div class="input-group">
+                <input type="text" name="searchString" class="form-control"
+                       placeholder="Search by doctor or patient name..."
+                       value="@Context.Request.Query["searchString"]" />
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    }
+
+
      <a asp-controller="Appointments" asp-action="Create" class="btn btn-outline-secondary">
         <i></i> Create Appointment
      </a>

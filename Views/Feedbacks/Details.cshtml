@@ -1,48 +1,38 @@
 ﻿@model Online_Healthcare_Appointment_System.Models.Feedback
-
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Feedback Details";
 }
 
-<h1>Details</h1>
+<div class="container mt-4">
+    <div class="card shadow-lg border-0 rounded-3 p-4">
+        <h3 class="text-center text-info mb-4">
+            <i class="bi bi-info-circle"></i> Feedback Details
+        </h3>
 
-<div>
-    <h4>Feedback</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Comments)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Comments)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Rating)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Rating)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DateSubmitted)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DateSubmitted)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Patient)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Patient.PatientId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Doctor)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Doctor.DoctorId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.FeedbackId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Feedback ID</dt>
+            <dd class="col-sm-9">@Model.FeedbackId</dd>
+
+            <dt class="col-sm-3">Patient</dt>
+            <dd class="col-sm-9">@Model.Patient?.Name</dd>
+
+            <dt class="col-sm-3">Doctor</dt>
+            <dd class="col-sm-9">@Model.Doctor?.Name</dd>
+
+            <dt class="col-sm-3">Rating</dt>
+            <dd class="col-sm-9"><span class="badge bg-success">@Model.Rating ★</span></dd>
+
+            <dt class="col-sm-3">Comments</dt>
+            <dd class="col-sm-9">@Model.Comments</dd>
+
+            <dt class="col-sm-3">Date Submitted</dt>
+            <dd class="col-sm-9">@Model.DateSubmitted.ToString("dd MMM yyyy, hh:mm tt")</dd>
+        </dl>
+
+        <div class="text-center mt-4">
+            <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
 </div>

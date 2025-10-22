@@ -58,38 +58,48 @@
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 h-100 text-center p-3 hover-card">
-                <div class="card-body">
-                    <i class="bi bi-credit-card-2-front fs-1 text-warning"></i>
-                    <h5 class="card-title mt-3">Manage Payments</h5>
-                    <p class="text-muted">View all payment transactions.</p>
-                    <a asp-controller="Payments" asp-action="Index" class="btn btn-warning text-white px-4">Go</a>
-                </div>
-            </div>
+        <!-- Manage Payments -->
+<div class="col-md-4">
+    <div class="card shadow-sm border-0 h-100 text-center p-3 hover-card">
+        <div class="card-body">
+            <i class="bi bi-credit-card-2-front fs-1 text-warning"></i>
+            <h5 class="card-title mt-3">Manage Payments</h5>
+            <p class="text-muted">View all payment transactions.</p>
+            <a asp-controller="Payments" asp-action="Index" class="btn btn-warning text-white px-4">Go</a>
         </div>
-
-         <div class="col-md-4">
-            <div class="card shadow-sm border-0 h-100 text-center p-3 hover-card">
-                <div class="card-body">
-                    <i class="bi bi-credit-card-2-front fs-1 text-warning"></i>
-                    <h5 class="card-title mt-3">Report</h5>
-                    <p class="text-muted">View all reports.</p>
-                    <a asp-controller="Reports" asp-action="Index" class="btn btn-warning text-white px-4">Go</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Appointments Button Section -->
-    <div class="text-center mt-5">
-        <a asp-controller="Appointments" asp-action="Index" class="btn btn-lg btn-primary px-5 py-3">
-            <i class="bi bi-calendar-event"></i> View All Appointments
-        </a>
     </div>
 </div>
 
-<!-- ✅ Styling -->
+<!-- Report (General Reports) -->
+<div class="col-md-4">
+    <div class="card shadow-sm border-0 h-100 text-center p-3 hover-card">
+        <div class="card-body">
+            <i class="bi bi-bar-chart-line fs-1 text-primary"></i>
+            <h5 class="card-title mt-3">Report</h5>
+            <p class="text-muted">View all reports.</p>
+            <a asp-controller="Reports" asp-action="Index" class="btn btn-primary text-white px-4">Go</a>
+        </div>
+    </div>
+</div>
+
+<!-- Appointment Report -->
+<div class="col-md-4">
+    <div class="card shadow-sm border-0 h-100 text-center p-3 hover-card">
+        <div class="card-body">
+            <i class="bi bi-calendar-event fs-1 text-success"></i>
+            <h5 class="card-title mt-3">Appointment Report</h5>
+            <p class="text-muted">View all appointments.</p>
+            <a asp-controller="Appointments" asp-action="Index" class="btn btn-success text-white px-4">Go</a>
+        </div>
+    </div>
+</div>
+
+    </div>
+
+    
+</div>
+
+<!--  Styling -->
 <style>
     .hover-card:hover {
         transform: translateY(-5px);

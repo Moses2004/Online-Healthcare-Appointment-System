@@ -21,25 +21,33 @@ namespace Online_Healthcare_Appointment_System.Controllers
             _context = context;
         }
 
-       
-        //  INDEX
-        
 
-        public async Task<IActionResult> Index()
+        //  INDEX
+
+        public async Task<IActionResult> Index(string searchString)
         {
             IQueryable<Appointment> query = _context.Appointments
                 .Include(a => a.Doctor)
                     .ThenInclude(d => d.Specialization)
                 .Include(a => a.Patient);
 
+            //  Admin can see all appointments
             if (User.IsInRole("Admin"))
             {
-                //  Admin: view all appointments
+                if (!string.IsNullOrEmpty(searchString))
+                {
+                    string lowerSearch = searchString.ToLower();
+                    query = query.Where(a =>
+                        a.Doctor.Name.ToLower().Contains(lowerSearch) ||
+                        a.Patient.Name.ToLower().Contains(lowerSearch));
+                }
+
                 return View(await query.OrderByDescending(a => a.AppointmentDate).ToListAsync());
             }
+
+            //  Doctor view
             else if (User.IsInRole("Doctor"))
             {
-                //  Doctor: view only own appointments
                 var userEmail = User.Identity.Name;
                 var doctor = await _context.Doctors
                     .Include(d => d.User)
@@ -49,9 +57,10 @@ namespace Online_Healthcare_Appointment_System.Controllers
 
                 query = query.Where(a => a.DoctorId == doctor.DoctorId);
             }
+
+            //  Patient view
             else if (User.IsInRole("Patient"))
             {
-                // Patient: view only their own appointments
                 var userEmail = User.Identity.Name;
                 var patient = await _context.Patients
                     .Include(p => p.User)
@@ -70,9 +79,9 @@ namespace Online_Healthcare_Appointment_System.Controllers
             return View(list);
         }
 
-        
+
         // DETAILS 
-       
+
 
         public async Task<IActionResult> Details(int? id)
         {

@@ -1,24 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Online_Healthcare_Appointment_System.Data;
 using Online_Healthcare_Appointment_System.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Online_Healthcare_Appointment_System.Controllers
 {
     public class DoctorsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public DoctorsController(ApplicationDbContext context)
+        public DoctorsController(ApplicationDbContext context,
+                                 UserManager<ApplicationUser> userManager,
+                                 RoleManager<IdentityRole> roleManager)
         {
             _context = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
-
         // GET: Doctors
         public async Task<IActionResult> Index(string searchString)
         {
@@ -60,28 +66,81 @@ namespace Online_Healthcare_Appointment_System.Controllers
         // GET: Doctors/Create
         public IActionResult Create()
         {
-            // show names in dropdown, not IDs
             ViewData["SpecializationId"] = new SelectList(_context.Specializations, "SpecializationId", "SpecializationName");
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email");
             return View();
         }
 
         // POST: Doctors/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DoctorId,Name,SpecializationId,Availability,ConsultationFee,UserId,IsApproved")] Doctor doctor)
+        public async Task<IActionResult> Create(DoctorRegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(doctor);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                ViewData["SpecializationId"] = new SelectList(_context.Specializations, "SpecializationId", "SpecializationName", model.SpecializationId);
+                return View(model);
             }
 
-            ViewData["SpecializationId"] = new SelectList(_context.Specializations, "SpecializationId", "SpecializationName", doctor.SpecializationId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", doctor.UserId);
-            return View(doctor);
+            // Check if the email is already used
+            var existingUser = await _userManager.FindByEmailAsync(model.Email);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("Email", "This email is already registered.");
+                ViewData["SpecializationId"] = new SelectList(_context.Specializations, "SpecializationId", "SpecializationName", model.SpecializationId);
+                return View(model);
+            }
+
+            //  Create new user for the doctor
+            var user = new ApplicationUser
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                PhoneNumber = model.PhoneNumber,
+                FullName = model.FullName,
+                RoleType = "Doctor",
+                EmailConfirmed = true //  confirm automatically since admin creates
+            };
+
+            var userResult = await _userManager.CreateAsync(user, model.Password);
+
+            if (!userResult.Succeeded)
+            {
+                foreach (var error in userResult.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+
+                ViewData["SpecializationId"] = new SelectList(_context.Specializations, "SpecializationId", "SpecializationName", model.SpecializationId);
+                return View(model);
+            }
+
+            // 3 Assign Doctor role (create if not exist)
+            if (!await _roleManager.RoleExistsAsync("Doctor"))
+            {
+                await _roleManager.CreateAsync(new IdentityRole("Doctor"));
+            }
+
+            await _userManager.AddToRoleAsync(user, "Doctor");
+
+            // Create Doctor record linked to the new user
+            var doctor = new Doctor
+            {
+                Name = model.FullName,
+                UserId = user.Id,
+                SpecializationId = model.SpecializationId,
+                Availability = model.Availability,
+                ConsultationFee = model.ConsultationFee,
+                IsApproved = true
+            };
+
+            _context.Doctors.Add(doctor);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Doctor '{doctor.Name}' created successfully with login: {user.Email}";
+
+            return RedirectToAction(nameof(Index));
         }
+    
 
         // GET: Doctors/Edit/5
         public async Task<IActionResult> Edit(int? id)

@@ -1,34 +1,27 @@
 ﻿@model Online_Healthcare_Appointment_System.Models.Specialization
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Specialization";
 }
 
-<h1>Edit</h1>
-
-<h4>Specialization</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="SpecializationId" />
-            <div class="form-group">
-                <label asp-for="SpecializationName" class="control-label"></label>
-                <input asp-for="SpecializationName" class="form-control" />
-                <span asp-validation-for="SpecializationName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-header bg-warning text-white text-center">
+            <h3>Edit Specialization</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit">
+                <input type="hidden" asp-for="SpecializationId" />
+                <div class="mb-3">
+                    <label asp-for="SpecializationName" class="form-label fw-bold"></label>
+                    <input asp-for="SpecializationName" class="form-control" />
+                    <span asp-validation-for="SpecializationName" class="text-danger"></span>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-warning text-white px-4">Update</button>
+                    <a asp-action="Index" class="btn btn-secondary px-4 ms-2">Back to List</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

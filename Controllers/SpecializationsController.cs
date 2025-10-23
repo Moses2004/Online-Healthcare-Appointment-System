@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Online_Healthcare_Appointment_System.Data;
 using Online_Healthcare_Appointment_System.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Online_Healthcare_Appointment_System.Controllers
 {
+    [Authorize(Roles = "Admin")]
+
     public class SpecializationsController : Controller
     {
         private readonly ApplicationDbContext _context;

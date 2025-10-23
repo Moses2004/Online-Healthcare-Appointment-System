@@ -1,53 +1,78 @@
-﻿@model Online_Healthcare_Appointment_System.Models.Doctor
+﻿@model Online_Healthcare_Appointment_System.Models.DoctorRegisterViewModel
+
 @{
-    ViewData["Title"] = "Add New Doctor";
+    ViewData["Title"] = "Add Doctor";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-            <h4 class="fw-bold text-primary mb-0">Add New Doctor</h4>
-            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">← Back</a>
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-header bg-success text-white text-center">
+            <h3>Add New Doctor</h3>
         </div>
+
         <div class="card-body">
             <form asp-action="Create">
-                <div class="mb-3">
-                    <label asp-for="Name" class="form-label fw-semibold"></label>
-                    <input asp-for="Name" class="form-control" />
-                    <span asp-validation-for="Name" class="text-danger"></span>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label fw-bold">Full Name</label>
+                            <input asp-for="FullName" class="form-control" placeholder="Enter doctor's full name" />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-bold">Email</label>
+                            <input asp-for="Email" class="form-control" placeholder="Enter doctor's email" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label fw-bold">Password</label>
+                            <input asp-for="Password" class="form-control" type="password" placeholder="Set initial password" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label fw-bold">Phone Number</label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="SpecializationId" class="form-label fw-bold">Specialization</label>
+                            <select asp-for="SpecializationId" class="form-select" asp-items="ViewBag.SpecializationId">
+                                <option value="">-- Select Specialization --</option>
+                            </select>
+                            <span asp-validation-for="SpecializationId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ConsultationFee" class="form-label fw-bold">Consultation Fee</label>
+                            <input asp-for="ConsultationFee" class="form-control" />
+                            <span asp-validation-for="ConsultationFee" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" asp-for="Availability" />
+                            <label class="form-check-label fw-bold" asp-for="Availability">Available</label>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="SpecializationId" class="form-label fw-semibold">Specialization</label>
-                    <select asp-for="SpecializationId" class="form-select" asp-items="ViewBag.SpecializationId">
-                        <option value="">-- Select Specialization --</option>
-                    </select>
-                    <span asp-validation-for="SpecializationId" class="text-danger"></span>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success px-4">Save</button>
+                    <a asp-action="Index" class="btn btn-secondary px-4 ms-2">Back to List</a>
+                    <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-outline-success px-4 ms-2">Back to Dashboard</a>
                 </div>
-
-                <div class="mb-3">
-                    <label asp-for="ConsultationFee" class="form-label fw-semibold"></label>
-                    <input asp-for="ConsultationFee" class="form-control" />
-                    <span asp-validation-for="ConsultationFee" class="text-danger"></span>
-                </div>
-
-                <div class="form-check mb-3">
-                    <input asp-for="Availability" class="form-check-input" />
-                    <label asp-for="Availability" class="form-check-label"></label>
-                </div>
-
-                <div class="form-check mb-3">
-                    <input asp-for="IsApproved" class="form-check-input" />
-                    <label asp-for="IsApproved" class="form-check-label"></label>
-                </div>
-
-                <button type="submit" class="btn btn-primary px-4">Save</button>
-                <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
             </form>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

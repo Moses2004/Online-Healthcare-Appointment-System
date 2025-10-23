@@ -1,35 +1,42 @@
 ﻿@model IEnumerable<Online_Healthcare_Appointment_System.Models.Specialization>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Specializations";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.SpecializationName)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.SpecializationName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.SpecializationId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.SpecializationId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.SpecializationId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-header bg-success text-white text-center">
+            <h3>Specializations List</h3>
+        </div>
+        <div class="card-body">
+            <div class="text-end mb-3">
+                <a asp-action="Create" class="btn btn-success">+ Add New Specialization</a>
+                <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-secondary ms-2">Back to Dashboard</a>
+            </div>
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-success text-center">
+                    <tr>
+                        <th>ID</th>
+                        <th>Specialization Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="text-center">@item.SpecializationId</td>
+                            <td>@item.SpecializationName</td>
+                            <td class="text-center">
+                                <a asp-action="Details" asp-route-id="@item.SpecializationId" class="btn btn-info btn-sm text-white">Details</a>
+                                <a asp-action="Edit" asp-route-id="@item.SpecializationId" class="btn btn-warning btn-sm text-white">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@item.SpecializationId" class="btn btn-danger btn-sm">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

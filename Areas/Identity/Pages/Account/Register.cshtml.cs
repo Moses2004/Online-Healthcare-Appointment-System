@@ -21,6 +21,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Online_Healthcare_Appointment_System.Data;
 using Online_Healthcare_Appointment_System.Models;
+using System.ComponentModel.DataAnnotations;
+
 
 namespace Online_Healthcare_Appointment_System.Areas.Identity.Pages.Account
 {
@@ -104,6 +106,11 @@ namespace Online_Healthcare_Appointment_System.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [Required]
+            [DataType(DataType.Date)]
+            [Display(Name = "Date of Birth")]
+            public DateTime DOB { get; set; }
         }
 
 
@@ -149,7 +156,8 @@ namespace Online_Healthcare_Appointment_System.Areas.Identity.Pages.Account
                         UserId = user.Id,          // FK to AspNetUsers
                         Phone = Input.PhoneNumber,
                         Gender = Input.Gender,
-                        Address = Input.Address
+                        Address = Input.Address,
+                        DOB = Input.DOB
                     };
 
                     _context.Patients.Add(patient);

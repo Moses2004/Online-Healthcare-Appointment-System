@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Online_Healthcare_Appointment_System.Controllers
 {
@@ -26,6 +27,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
             _roleManager = roleManager;
         }
         // GET: Doctors
+        [Authorize(Roles = "Admin,Doctor,Patient")]
         public async Task<IActionResult> Index(string searchString)
         {
             var doctors = _context.Doctors
@@ -43,6 +45,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
 
 
         // GET: Doctors/Details/5
+        [Authorize(Roles = "Admin,Doctor,Patient")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -64,6 +67,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         }
 
         // GET: Doctors/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["SpecializationId"] = new SelectList(_context.Specializations, "SpecializationId", "SpecializationName");
@@ -71,6 +75,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         }
 
         // POST: Doctors/Create
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(DoctorRegisterViewModel model)
@@ -114,7 +119,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
                 return View(model);
             }
 
-            // 3 Assign Doctor role (create if not exist)
+            // Assign Doctor role (create if not exist)
             if (!await _roleManager.RoleExistsAsync("Doctor"))
             {
                 await _roleManager.CreateAsync(new IdentityRole("Doctor"));
@@ -140,9 +145,10 @@ namespace Online_Healthcare_Appointment_System.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-    
+
 
         // GET: Doctors/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -162,6 +168,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         }
 
         // POST: Doctors/Edit/5
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("DoctorId,Name,SpecializationId,Availability,ConsultationFee,UserId,IsApproved")] Doctor doctor)
@@ -198,6 +205,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         }
 
         // GET: Doctors/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -219,6 +227,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         }
 
         // POST: Doctors/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -234,6 +243,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         }
 
         // Approve Doctor
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Approve(int id)
         {
             var doctor = await _context.Doctors.FindAsync(id);
@@ -247,6 +257,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         }
 
         // Remove Doctor
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Remove(int id)
         {
             var doctor = await _context.Doctors.FindAsync(id);

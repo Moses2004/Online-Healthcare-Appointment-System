@@ -30,18 +30,60 @@ namespace Online_Healthcare_Appointment_System.Controllers
 
         // GET: Patients
         [Authorize(Roles = "Admin,Doctor")]
+     
         public async Task<IActionResult> Index(string searchEmail)
         {
-            var patients = _context.Patients.Include(p => p.User).AsQueryable();
+            IQueryable<Patient> patients = _context.Patients
+                .Include(p => p.User)
+                .AsQueryable();
 
-            if (!string.IsNullOrEmpty(searchEmail))
+            var userEmail = User.Identity.Name;
+
+            //  Admin can see all patients
+            if (User.IsInRole("Admin"))
             {
-                patients = patients.Where(p => p.User.Email.Contains(searchEmail));
+                if (!string.IsNullOrEmpty(searchEmail))
+                    patients = patients.Where(p => p.User.Email.Contains(searchEmail));
+
+                ViewData["SearchEmail"] = searchEmail;
+                return View(await patients.ToListAsync());
             }
 
-            ViewData["SearchEmail"] = searchEmail;
-            return View(await patients.ToListAsync());
+            //  Doctor can see only patients who made appointments with him
+            else if (User.IsInRole("Doctor"))
+            {
+                var doctor = await _context.Doctors
+                    .Include(d => d.User)
+                    .FirstOrDefaultAsync(d => d.User.Email == userEmail);
+
+                if (doctor == null) return Forbid();
+
+                patients = _context.Appointments
+                    .Where(a => a.DoctorId == doctor.DoctorId)
+                    .Include(a => a.Patient)
+                        .ThenInclude(p => p.User)
+                    .Select(a => a.Patient)
+                    .Distinct();
+
+                return View(await patients.ToListAsync());
+            }
+
+            // Patient can only view their own profile
+            else if (User.IsInRole("Patient"))
+            {
+                var patient = await _context.Patients
+                    .Include(p => p.User)
+                    .FirstOrDefaultAsync(p => p.User.Email == userEmail);
+
+                if (patient == null) return Forbid();
+
+                return View(new List<Patient> { patient });
+            }
+
+            // If no valid role
+            return Forbid();
         }
+
 
         // Redirect to Identity Manage Page
         public IActionResult ManageProfile()

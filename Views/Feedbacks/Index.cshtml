@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Feedbacks";
+
     bool isAdmin = User.IsInRole("Admin");
     bool isDoctor = User.IsInRole("Doctor");
     bool isPatient = User.IsInRole("Patient");
@@ -10,67 +11,117 @@
     string backAction = isAdmin ? "Dashboard" : "Index";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <a asp-controller="@backController" asp-action="@backAction" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left-circle"></i> Back to Dashboard
-    </a>
+<div class="container mt-5 mb-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                <i class="bi bi-chat-dots"></i> Feedback List
+            </h4>
 
-    @if (isPatient)
-    {
-        <a asp-action="Create" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Add Feedback
-        </a>
-    }
-</div>
-
-<div class="card shadow-sm p-3 rounded-3">
-    <h3 class="text-center mb-3"><i class="bi bi-chat-dots text-success"></i> Feedback List</h3>
-
-    <table class="table table-hover align-middle text-center">
-        <thead class="table-success">
-            <tr>
-                <th>Feedback ID</th>
-                <th>Patient</th>
-                <th>Doctor</th>
-                <th>Rating</th>
-                <th>Comments</th>
-                <th>Date</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
+            @if (isPatient)
             {
-                <tr>
-                    <td>@item.FeedbackId</td>
-                    <td>@item.Patient?.Name</td>
-                    <td>@item.Doctor?.Name</td>
-                    <td>
-                        <span class="badge bg-success">@item.Rating ★</span>
-                    </td>
-                    <td>@item.Comments</td>
-                    <td>@item.DateSubmitted.ToString("dd MMM yyyy")</td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@item.FeedbackId" class="btn btn-sm btn-primary me-1">
-                            <i class="bi bi-eye"></i> View
-                        </a>
-
-                        @if (isPatient)
-                        {
-                            <a asp-action="Edit" asp-route-id="@item.FeedbackId" class="btn btn-sm btn-warning">
-                                <i class="bi bi-pencil-square"></i> Edit
-                            </a>
-                        }
-                    </td>
-                </tr>
+                <a asp-action="Create" class="btn btn-success btn-sm">
+                    <i class="bi bi-plus-circle"></i> Add Feedback
+                </a>
             }
-        </tbody>
-    </table>
-
-    @if (!Model.Any())
-    {
-        <div class="alert alert-warning text-center mt-3">
-            No feedback found.
         </div>
-    }
+
+        <div class="card-body">
+            @if (!Model.Any())
+            {
+                <div class="alert alert-warning text-center p-4 rounded">
+                    <i class="bi bi-exclamation-circle"></i> No feedback found.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle text-center">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Feedback ID</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Rating</th>
+                                <th>Comments</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.FeedbackId</td>
+                                    <td>@item.Patient?.Name</td>
+                                    <td>@item.Doctor?.Name</td>
+                                    <td>
+                                        <span class="rating-stars">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= item.Rating)
+                                                {
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-star text-secondary"></i>
+                                                }
+                                            }
+                                        </span>
+                                    </td>
+                                    <td>@item.Comments</td>
+                                    <td>@item.DateSubmitted.ToString("yyyy-MM-dd")</td>
+                                    <td>
+                                        <a asp-action="Details" asp-route-id="@item.FeedbackId" class="btn btn-sm btn-outline-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        @if (isAdmin || isPatient)
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.FeedbackId" class="btn btn-sm btn-outline-primary mx-1">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.FeedbackId" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+
+        <div class="card-footer text-center">
+            <a asp-controller="@backController" asp-action="@backAction" class="btn btn-outline-secondary">
+                ← Back to Dashboard
+            </a>
+        </div>
+    </div>
 </div>
+
+<style>
+    .container {
+        max-width: 1000px;
+    }
+
+    .card {
+        border-radius: 15px;
+    }
+
+    th, td {
+        vertical-align: middle !important;
+    }
+
+    .btn-sm i {
+        font-size: 0.9rem;
+    }
+
+    .rating-stars i {
+        font-size: 1.1rem;
+        margin-right: 2px;
+    }
+</style>

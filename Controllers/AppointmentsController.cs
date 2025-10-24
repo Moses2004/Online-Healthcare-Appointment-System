@@ -120,10 +120,10 @@ namespace Online_Healthcare_Appointment_System.Controllers
             return View(appointment);
         }
 
-        
-        // ==================== CREATE =================================
-      
 
+        // ==================== CREATE =================================
+
+        [Authorize(Roles = "Patient")]
         public IActionResult Create()
         {
             ViewData["DoctorId"] = new SelectList(
@@ -140,7 +140,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
 
             return View();
         }
-
+        [Authorize(Roles = "Patient")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("AppointmentDate,Notes,DoctorId")] Appointment appointment)
@@ -233,7 +233,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
         {
             if (id != appointment.AppointmentId) return NotFound();
 
-            // ✅ Remove invalid fields from validation
+            //  Remove invalid fields from validation
             ModelState.Remove("Doctor");
             ModelState.Remove("Patient");
             ModelState.Remove("Prescription");
@@ -243,7 +243,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
                 var existing = await _context.Appointments.FindAsync(id);
                 if (existing == null) return NotFound();
 
-                // ✅ Restrict who can edit
+                //  Restrict who can edit
                 if (User.IsInRole("Doctor"))
                 {
                     var userEmail = User.Identity.Name;
@@ -278,8 +278,6 @@ namespace Online_Healthcare_Appointment_System.Controllers
 
     
         //  DELETE 
-      
-
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -317,7 +315,7 @@ namespace Online_Healthcare_Appointment_System.Controllers
             var appointment = await _context.Appointments.FindAsync(id);
             if (appointment == null) return NotFound();
 
-            // ✅ Restrict delete permission
+            //  Restrict delete permission
             if (User.IsInRole("Doctor"))
             {
                 var userEmail = User.Identity.Name;

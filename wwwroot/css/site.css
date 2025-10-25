@@ -79,3 +79,47 @@ body {
         background: linear-gradient(to right, #0062cc, #0088ff);
         transform: translateY(-2px);
     }
+
+
+/* === Home Page Styling === */
+
+.hero-section {
+    background-color: #f8fbff;
+    padding: 100px 0;
+}
+
+    .hero-section h1 {
+        font-weight: 700;
+    }
+
+    .hero-section p {
+        font-size: 1.2rem;
+        color: #6c757d;
+    }
+
+    .hero-section .btn-primary {
+        background: linear-gradient(to right, #007bff, #00aaff);
+        border: none;
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        border-radius: 8px;
+    }
+
+        .hero-section .btn-primary:hover {
+            background: linear-gradient(to right, #0062cc, #0088ff);
+            transform: translateY(-2px);
+        }
+
+/* Services Section */
+.services-section {
+    background-color: #ffffff;
+}
+
+.service-card {
+    transition: all 0.3s ease;
+}
+
+    .service-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }

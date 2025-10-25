@@ -2,16 +2,43 @@
     ViewData["Title"] = "Home";
 }
 
-<div class="hero-section d-flex flex-column justify-content-center align-items-center text-center">
-   <h1 class="display-4 fw-bold fade-in" style="color:black;">Welcome to MediCare Pvt Ltd</h1>
-
-    <p class="lead fade-in" style="color:black;">Your trusted partner for quality healthcare appointments and prescriptions.</p>
-    <a class="btn btn-light mt-3 fade-in" asp-controller="Appointments" asp-action="Create">
-        <i class="bi bi-calendar-plus"></i> Book an Appointment
-    </a>
+<div class="hero-section text-center">
+    <div class="container">
+        <h1 class="fw-bold display-5 text-primary mb-3">Welcome to <span class="text-dark">MediCare Pvt Ltd</span></h1>
+        <p class="lead text-secondary mb-4">
+            Your trusted partner for quality healthcare appointments and prescriptions.
+        </p>
+        <a asp-controller="Appointments" asp-action="Create" class="btn btn-primary btn-lg shadow-sm">
+            <i class="bi bi-calendar-check"></i> Book an Appointment
+        </a>
+    </div>
 </div>
 
-<section class="text-center mt-5">
-    <h2>Our Services</h2>
-    <p>Book doctor appointments, manage prescriptions, and view your payments — all in one place.</p>
+<section class="services-section py-5">
+    <div class="container text-center">
+        <h2 class="fw-bold text-primary mb-4">Our Services</h2>
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-4">
+                <div class="service-card p-4 shadow-sm rounded-4 bg-white">
+                    <i class="bi bi-person-heart display-5 text-primary mb-3"></i>
+                    <h5>Doctor Appointments</h5>
+                    <p class="text-muted">Book appointments with experienced doctors easily online.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-card p-4 shadow-sm rounded-4 bg-white">
+                    <i class="bi bi-prescription2 display-5 text-primary mb-3"></i>
+                    <h5>Prescriptions</h5>
+                    <p class="text-muted">Access and manage your medical prescriptions in one place.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-card p-4 shadow-sm rounded-4 bg-white">
+                    <i class="bi bi-cash-stack display-5 text-primary mb-3"></i>
+                    <h5>Payments</h5>
+                    <p class="text-muted">View, manage, and complete your medical payments securely.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
